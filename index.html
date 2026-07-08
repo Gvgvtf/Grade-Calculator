@@ -45,6 +45,7 @@
   --danger-rgb:  176,74,66;
   --warn-rgb:    184,134,46;
   --success-rgb: 63,143,108;
+  --muted-rgb:   74,92,106;
   --rule:        2px solid var(--accent);
   --hover-tint:    rgba(6,20,27,0.04);
   --panel-shadow:  0 8px 28px -12px rgba(6,20,27,0.22);
@@ -84,6 +85,7 @@
   --danger-rgb:  217,122,113;
   --warn-rgb:    217,167,82;
   --success-rgb: 111,191,156;
+  --muted-rgb:   74,92,106;
   --hover-tint:    rgba(204,208,207,0.05);
   --panel-shadow:  0 8px 28px -12px rgba(0,0,0,0.55);
 
@@ -106,8 +108,9 @@ body {
   color: var(--text);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   overflow-x: auto; /* allow horizontal scroll if the fixed-width layout exceeds a narrow viewport */
+  overflow-y: hidden; /* content scrolls within its own regions instead of growing the page */
   -webkit-font-smoothing: antialiased;
   transition: background 0.35s ease, color 0.35s ease;
 }
@@ -121,8 +124,7 @@ header {
   padding: 0 2.25rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: center;
   flex-shrink: 0;
   border-bottom: var(--rule);
   transition: background 0.35s ease, border-color 0.35s ease;
@@ -155,134 +157,195 @@ h1 {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   TAB BAR
+   APP LAYOUT — sidebar (subjects) + main content, centered
+   together as one unit so the sidebar lives in what used to be
+   empty margin space on wide screens.
    ══════════════════════════════════════════════════════════════ */
-.tab-bar {
+.app-layout {
   display: flex;
   align-items: stretch;
-  background: var(--hdr);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 0.5px solid var(--border);
-  padding: 0 20px;
-  flex-shrink: 0;
-  height: 44px;
-}
-/* Scrollable inner strip — tabs + add button scroll together
-   so + always sits right after the last tab */
-.tab-scroll {
-  display: flex;
-  align-items: stretch;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab-scroll::-webkit-scrollbar { display: none; }
-.tab-list {
-  display: flex;
-  align-items: stretch;
+  gap: 22px;
+  flex: 1;
+  min-height: 0;
+  width: fit-content;
+  margin: 0 auto;
+  padding-top: 20px;
 }
 
-.tab {
-  display: inline-flex;
+/* ── Subject sidebar ──────────────────────────────────────── */
+.subject-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-bottom: 20px;
+}
+.add-subject-btn {
+  display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 0 14px;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 8px;
+  margin-top: 4px;
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
+  border-radius: 7px;
+  color: var(--accent);
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
+  font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
-  transition: color 0.18s, border-color 0.18s, background 0.18s;
-  flex-shrink: 0;
-  position: relative;
+  transition: background 0.15s;
 }
-.tab:hover:not(.active) {
+.add-subject-btn:hover { background: var(--accent-dim); }
+.add-subject-btn:active { transform: scale(0.98); }
+.add-subject-btn-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.subject-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.subject-list::-webkit-scrollbar { width: 3px; }
+.subject-list::-webkit-scrollbar-track { background: transparent; }
+.subject-list::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 3px; }
+.subject-list::-webkit-scrollbar-thumb:hover { background: var(--accent-mid); }
+
+.subject-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.subject-item:hover:not(.active) {
   color: var(--muted-light);
   background: var(--hover-tint);
 }
-.tab.active {
+.subject-item.active {
   color: var(--text);
-  border-bottom-color: var(--accent);
+  background: var(--accent-dim);
 }
-.tab-name {
-  pointer-events: none;
-  max-width: 160px;
+/* Left accent bar — only the currently active subject has it */
+.subject-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
+}
+.subject-item-name {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.79rem;
 }
-.tab-close {
-  display: inline-flex;
+.subject-item-close {
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px; height: 16px;
+  width: 18px; height: 18px;
   background: transparent;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
   padding: 0;
-  opacity: 0.35;
+  opacity: 0;
   transition: color 0.15s, background 0.15s, opacity 0.15s;
-  flex-shrink: 0;
 }
-.tab:hover .tab-close,
-.tab.active .tab-close { opacity: 1; }
-.tab-close:hover {
-  color: var(--danger);
-  background: rgba(var(--danger-rgb),0.12);
+.subject-item:hover .subject-item-close,
+.subject-item.active .subject-item-close { opacity: 1; }
+.subject-item-close:hover {
+  color: #fff;
+  background: var(--danger);
   opacity: 1;
 }
 
-/* Inline rename input inside a tab */
-.tab-rename-input {
+/* Inline rename input — replaces the name span within a subject item */
+input.subject-item-rename {
+  flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   border-bottom: 1.5px solid var(--accent);
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   padding: 1px 2px;
   outline: none;
-  min-width: 60px;
-  width: 110px;
-  max-width: 180px;
 }
 
-/* Add-tab button */
-.add-tab-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  width: 26px; height: 26px;
-  background: transparent;
+/* Inline "new subject" input — appended to the list, styled like
+   a subject item so it reads as a natural continuation of the list */
+input.subject-add-input {
+  width: 100%;
+  background: var(--card);
   border: 0.5px solid var(--border);
-  border-radius: 6px;
-  color: var(--muted);
-  cursor: pointer;
-  margin-left: 8px;
-  margin-right: 2px;
-  flex-shrink: 0;
-  transition: color 0.18s, border-color 0.18s, background 0.18s;
+  border-radius: 9px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.15s;
 }
-.add-tab-btn:hover {
-  color: var(--accent);
-  border-color: var(--accent-mid);
-  background: var(--accent-dim);
-}
-.add-tab-btn:active { transform: scale(0.94); }
+input.subject-add-input:focus { border-color: var(--accent); }
 
-/* ── Header right-side group (theme toggle + save) ─────────── */
-.hdr-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.subject-empty-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+/* ── Sidebar footer: utility icons + Save ────────────────────── */
+.sidebar-footer {
   flex-shrink: 0;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sidebar-footer-icons {
+  display: flex;
+  gap: 7px;
+}
+.sidebar-footer-icons .icon-btn {
+  flex: 1;
+  width: auto;
 }
 
 /* ── Icon-only header buttons (theme toggle, import, export) ── */
@@ -311,8 +374,10 @@ h1 {
 .save-btn {
   display: none; /* shown via JS once the first subject exists */
   align-items: center;
+  justify-content: center;
+  width: 100%;
   gap: 7px;
-  height: 32px;
+  height: 34px;
   padding: 0 14px;
   background: var(--accent-dim);
   border: 0.5px solid var(--accent-mid);
@@ -323,7 +388,6 @@ h1 {
   font-weight: 500;
   cursor: pointer;
   flex-shrink: 0;
-  align-self: center;
   letter-spacing: 0.01em;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
@@ -336,30 +400,20 @@ h1 {
   color: var(--success);
 }
 
-/* Hint text shown in empty tab bar */
-.tab-hint {
-  font-size: 0.72rem;
-  color: var(--muted);
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  align-self: center;
-  margin-right: 6px;
-  pointer-events: none;
-  user-select: none;
-}
-
 /* ── Subject name in right panel ───────────────────────────── */
 .subject-display {
   font-family: 'Sora', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 300;
-  color: var(--muted-light);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--accent);
   letter-spacing: -0.01em;
-  transition: color 0.2s;
+  background: var(--accent-dim);
+  padding: 3px 10px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
   cursor: default;
-  border-radius: 3px;
 }
-.subject-display:hover { color: var(--text); }
+.subject-display:hover { background: var(--accent-mid); color: var(--text); }
 
 /* Inline rename input inside the right panel header */
 .subject-rename-input {
@@ -384,10 +438,9 @@ h1 {
    width just becomes empty space on either side. */
 .body {
   display: flex;
-  justify-content: center;
   gap: 18px;
-  padding: 20px;
-  flex: 1;
+  padding: 0 20px 20px 0;
+  flex-shrink: 0;
   min-height: 0;
 }
 
@@ -401,17 +454,12 @@ h1 {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  min-height: 0;
   transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
 #left-panel    {
   width: 280px;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
-#left-panel::-webkit-scrollbar { width: 3px; }
-#left-panel::-webkit-scrollbar-track { background: transparent; }
-#left-panel::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 3px; }
-#left-panel::-webkit-scrollbar-thumb:hover { background: var(--accent-mid); }
 .right-panel   { width: 760px; overflow: hidden; }
 
 /* ── Labels & seps ─────────────────────────────────────────── */
@@ -556,6 +604,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   flex-shrink: 0;
   width: 96px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -651,6 +700,20 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 }
 
 /* ── Component scroll area ─────────────────────────────────── */
+/* Grading-scale scroll region — mirrors .comp-scroll on the right,
+   so both panels grow to the same fixed length and scroll their
+   own overflow internally rather than stretching the page. */
+#grade-config {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+#grade-config::-webkit-scrollbar { width: 3px; }
+#grade-config::-webkit-scrollbar-track { background: transparent; }
+#grade-config::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 3px; }
+#grade-config::-webkit-scrollbar-thumb:hover { background: var(--accent-mid); }
+
 .comp-scroll {
   flex: 1;
   overflow-y: auto;
@@ -940,6 +1003,307 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   vertical-align: middle;
   border: 0.5px solid var(--accent-mid);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   FEEDBACK TOAST — small periodic nudge, sits just above the FAB
+   ══════════════════════════════════════════════════════════════ */
+.feedback-toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 258px;
+  background: var(--card2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 14px 34px -12px rgba(6,20,27,0.35);
+  padding: 16px 16px 14px;
+  z-index: 500;
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.feedback-toast.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.feedback-toast-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.feedback-toast-close:hover { background: var(--hover-tint); color: var(--muted-light); }
+.feedback-toast-text {
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 2px 18px 12px 0;
+}
+.feedback-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.feedback-toast-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.feedback-toast-btn:hover { opacity: 0.88; }
+.feedback-toast-later {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 6px 2px;
+  transition: color 0.15s;
+}
+.feedback-toast-later:hover { color: var(--muted-light); }
+
+/* ══════════════════════════════════════════════════════════════
+   FEEDBACK MODAL — full-screen overlay with the actual form
+   ══════════════════════════════════════════════════════════════ */
+.feedback-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,20,27,0.5);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.feedback-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.feedback-modal {
+  position: relative;
+  width: 420px;
+  max-width: calc(100vw - 40px);
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px -16px rgba(6,20,27,0.4);
+  padding: 30px 28px 26px;
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.25s ease;
+}
+.feedback-overlay.visible .feedback-modal {
+  transform: translateY(0) scale(1);
+}
+.feedback-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.feedback-modal-close:hover { background: var(--hover-tint); color: var(--muted-light); }
+.feedback-modal-tag {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.feedback-modal-title {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.feedback-modal-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.feedback-textarea {
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  background: var(--card);
+  color: var(--text);
+  border: 0.5px solid var(--border);
+  border-radius: 9px;
+  padding: 11px 13px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.feedback-textarea::placeholder { color: var(--muted); }
+.feedback-textarea:focus { border-color: var(--accent); }
+.feedback-error {
+  font-size: 0.7rem;
+  color: var(--danger);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+.feedback-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.feedback-char-count {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.feedback-submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.feedback-submit-btn:hover:not(:disabled) { opacity: 0.88; }
+.feedback-submit-btn:disabled {
+  background: var(--accent-dim);
+  color: var(--muted);
+  cursor: default;
+}
+.feedback-thanks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 22px 0 14px;
+  gap: 12px;
+  animation: fadeIn 0.3s ease both;
+}
+.feedback-thanks-text {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE — tablets & phones.
+   The desktop layout is a fixed-width "app" (sidebar + two panels
+   side by side, page height locked to the viewport with internal
+   scroll regions). Below this width that stops making sense, so
+   this switches to a normal fluid, vertically-stacked page that
+   scrolls the way any responsive site would.
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 880px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  header {
+    height: auto;
+    padding: 14px 16px;
+  }
+  .hdr-titles { align-items: center; text-align: center; }
+  h1 { font-size: 1.15rem; }
+  .subtitle { font-size: 0.68rem; }
+
+  /* Sidebar + main content stack instead of sitting side by side */
+  .app-layout {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin: 0;
+    padding: 14px 14px 24px;
+    gap: 14px;
+  }
+  .subject-sidebar { width: 100%; min-height: 0; }
+  .subject-list {
+    flex: none;
+    max-height: 190px;
+  }
+
+  /* The two panels stack full-width instead of sitting side by side */
+  .body {
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    gap: 14px;
+  }
+  #left-panel, .right-panel { width: 100%; }
+
+  /* The whole page scrolls normally now, so the panels' own
+     internal scroll regions are no longer needed — let them grow
+     with their content instead of clipping to a fixed length. */
+  #grade-config, .comp-scroll {
+    flex: none;
+    min-height: 0;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  /* Grade banner shrinks to fit narrower screens */
+  .grade-banner { padding: 16px 16px 12px; }
+  .grade-letter-block { width: 74px; }
+  .grade-letter { font-size: 3.4rem; }
+  .grade-num { font-size: 1.8rem; }
+  .grade-vline { margin: 0 14px; }
+
+  /* Slightly larger tap targets on touch devices */
+  .icon-btn { width: 36px; height: 36px; }
+}
+
+@media (max-width: 480px) {
+  .grade-main { flex-wrap: wrap; row-gap: 12px; }
+  .grade-vline { display: none; }
+  .grade-footer { flex-wrap: wrap; row-gap: 10px; }
+  .grade-footer > div:last-child { margin-left: 0 !important; width: 100%; justify-content: space-between; }
+  .sidebar-footer-icons { flex-wrap: wrap; }
+}
 </style>
 </head>
 <body>
@@ -952,54 +1316,71 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
       <p class="subtitle">All of your grades in one place.</p>
     </div>
   </div>
-  <div class="hdr-right">
-    <button class="icon-btn theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Switch between light and dark mode">
-      <svg class="icon-sun" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-        <circle cx="7.5" cy="7.5" r="3.2" stroke="currentColor" stroke-width="1.3"/>
-        <path d="M7.5 0.8v1.9M7.5 12.3v1.9M14.2 7.5h-1.9M2.7 7.5H0.8M12.3 2.7l-1.35 1.35M4.05 10.95L2.7 12.3M12.3 12.3l-1.35-1.35M4.05 4.05L2.7 2.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
-      <svg class="icon-moon" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-        <path d="M13 8.7A6 6 0 0 1 6.3 2 6 6 0 1 0 13 8.7Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <input type="file" id="import-file-input" accept=".json,application/json" style="display:none" onchange="handleImportFile(event)" />
-    <button class="icon-btn" id="import-btn" onclick="document.getElementById('import-file-input').click()" title="Import a previously exported backup file">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <path d="M7 9.5V1.5M4 4.5l3-3 3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M1.5 9.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <button class="icon-btn" id="export-btn" style="display:none" onclick="exportData()" title="Export all subjects as a backup file">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <path d="M7 1.5v8M4 6.5l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M1.5 9.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <button class="save-btn" id="save-btn" onclick="saveAllData()" title="Save your data so it's here next time you open this page">
-      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <path d="M2 2h8l2 2v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
-        <path d="M4 2v3h5V2M4 13V9h6v4" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
-      </svg>
-      <span id="save-btn-label">Save</span>
-    </button>
-  </div>
 </header>
 
 <!-- ══════════════════════════════════════════════════════════
-     TAB BAR
+     APP LAYOUT — subject sidebar + main content
      ══════════════════════════════════════════════════════════ -->
-<div class="tab-bar">
-  <div class="tab-list" id="tab-list"></div>
-  <span class="tab-hint" id="tab-hint" style="display:none">Add a subject</span>
-  <button class="add-tab-btn" onclick="addTab()" title="Add subject tab">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
-      <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-  </button>
-</div>
+<div class="app-layout">
 
-<!-- ── Body ────────────────────────────────────────────────── -->
-<div class="body">
+  <!-- ── Subject sidebar ─────────────────────────────────────── -->
+  <aside class="subject-sidebar">
+    <div class="tag" style="margin-bottom:0">Subjects</div>
+    <div class="panel-sep" style="margin-top:10px"></div>
+    <button class="add-subject-btn" onclick="addTab()" title="Add a new subject">
+      <span class="add-subject-btn-icon">
+        <svg width="10" height="10" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Add subject
+    </button>
+    <div class="subject-list" id="tab-list"></div>
+    <span class="subject-empty-hint" id="tab-hint" style="display:none">Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> above to get started.</span>
+
+    <!-- ── Sidebar footer: utility + save actions ─────────────── -->
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-icons">
+        <button class="icon-btn theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Switch between light and dark mode">
+          <svg class="icon-sun" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <circle cx="7.5" cy="7.5" r="3.2" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M7.5 0.8v1.9M7.5 12.3v1.9M14.2 7.5h-1.9M2.7 7.5H0.8M12.3 2.7l-1.35 1.35M4.05 10.95L2.7 12.3M12.3 12.3l-1.35-1.35M4.05 4.05L2.7 2.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon-moon" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <path d="M13 8.7A6 6 0 0 1 6.3 2 6 6 0 1 0 13 8.7Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <input type="file" id="import-file-input" accept=".json,application/json" style="display:none" onchange="handleImportFile(event)" />
+        <button class="icon-btn" id="import-btn" onclick="document.getElementById('import-file-input').click()" title="Load a file">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 9.5V1.5M4 4.5l3-3 3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M1.5 9.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="export-btn" style="display:none" onclick="exportData()" title="Download">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 1.5v8M4 6.5l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M1.5 9.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="feedback-fab" onclick="openFeedbackModal()" title="Give feedback">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M1.5 2.5h11a1 1 0 0 1 1 1V9a1 1 0 0 1-1 1H5.5L2 12.8V10h-.5a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <button class="save-btn" id="save-btn" onclick="saveAllData()" title="Save data to local browser">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M2 2h8l2 2v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M4 2v3h5V2M4 13V9h6v4" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+        </svg>
+        <span id="save-btn-label">Save</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Body ────────────────────────────────────────────────── -->
+  <div class="body">
 
   <!-- ── Left panel ─────────────────────────────────────────── -->
   <div class="panel" id="left-panel">
@@ -1026,7 +1407,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
       <div class="grade-table">
         <div class="grade-hdr">
-          <span>Grade</span><span id="low-hdr-label">Low</span><span></span><span id="high-hdr-label">High</span>
+          <span>Grade</span><span id="low-hdr-label" title="Minimum score">Low</span><span></span><span id="high-hdr-label" title="Maximum score">High</span>
         </div>
         <div id="grade-rows"></div>
         <button class="sort-grades-btn" onclick="sortGradeRows()" title="Sort grade ranges and check for gaps/overlaps">
@@ -1051,7 +1432,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
     <div id="left-hint" style="flex:1;display:flex;align-items:flex-end;padding-bottom:4px">
       <p style="font-size:0.72rem;color:var(--muted);line-height:1.7">
-        Double-click the subject tab above to name this subject and get started.
+        Double-click the subject in the sidebar to name it and get started.
       </p>
     </div>
   </div>
@@ -1076,7 +1457,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
         <div class="grade-main">
           <div class="grade-letter-block">
             <span class="grade-letter" id="grade-letter">—</span>
-            <span class="rounded-badge" id="rounded-badge">↑ rounded</span>
+            <span class="rounded-badge" id="rounded-badge">rounded up</span>
           </div>
           <div class="grade-vline"></div>
           <div class="grade-stats">
@@ -1103,14 +1484,14 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
           </div>
           <div style="margin-left:auto;display:flex;gap:18px;align-items:center">
             <div class="toggle-row" style="margin-left:0">
-              <label class="toggle-switch" title="When on, the total covered weight is treated as 100% — your grade is scaled relative to what has been entered so far.">
+              <label class="toggle-switch">
                 <input type="checkbox" id="normalize-toggle" onchange="toggleNormalize(this.checked)" />
                 <span class="toggle-knob"></span>
               </label>
               <label class="toggle-lbl" for="normalize-toggle">Scale to covered weight</label>
             </div>
             <div class="toggle-row" style="margin-left:0">
-              <label class="toggle-switch" title="When on, a grade whose decimal is ≥ 0.5 shows the next higher letter mark. The numerical value stays unchanged.">
+              <label class="toggle-switch">
                 <input type="checkbox" id="roundup-toggle" onchange="toggleRoundUp(this.checked)" />
                 <span class="toggle-knob"></span>
               </label>
@@ -1129,13 +1510,55 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
           <path d="M5 7h8M5 10h5" stroke-width="1.1" stroke-linecap="round"/>
         </svg>
       </div>
-      <p>Double-click the <strong>subject tab</strong> above to name it and start tracking grades.</p>
+      <p>Double-click the <strong>subject</strong> in the sidebar to name it and start tracking grades.</p>
     </div>
 
     <!-- Scrollable components -->
     <div class="comp-scroll" id="comp-scroll" style="display:none"></div>
   </div>
 
+  </div>
+</div>
+
+<!-- ── Feedback toast ─────────────────────────────────────────── -->
+<div class="feedback-toast" id="feedback-toast" role="status">
+  <button class="feedback-toast-close" id="feedback-toast-close" title="Dismiss" aria-label="Dismiss">×</button>
+  <p class="feedback-toast-text">Enjoying the calculator?<br>We'd love to hear your feedback!</p>
+  <div class="feedback-toast-actions">
+    <button class="feedback-toast-btn" id="feedback-toast-open">Give feedback!</button>
+    <button class="feedback-toast-later" id="feedback-toast-later">Not now</button>
+  </div>
+</div>
+
+<!-- ── Feedback modal (full-screen overlay) ──────────────────── -->
+<div class="feedback-overlay" id="feedback-overlay">
+  <div class="feedback-modal">
+    <button class="feedback-modal-close" id="feedback-modal-close" title="Close" aria-label="Close">×</button>
+
+    <div id="feedback-form-view">
+      <div class="feedback-modal-tag">Feedback</div>
+      <h2 class="feedback-modal-title">Tell us what you think!</h2>
+      <p class="feedback-modal-sub">Bugs, feature ideas, or just how it's working out for you, all of it helps!</p>
+      <textarea id="feedback-text" class="feedback-textarea" placeholder="Type your suggestion here!" maxlength="2000"></textarea>
+      <p class="feedback-error" id="feedback-error" style="display:none">Couldn't send that, please check your connection and try again!</p>
+      <div class="feedback-modal-footer">
+        <span class="feedback-char-count" id="feedback-char-count">0 / 2000</span>
+        <button class="feedback-submit-btn" id="feedback-submit-btn" onclick="submitFeedback()">Submit feedback!</button>
+      </div>
+    </div>
+
+    <div id="feedback-thanks-view" style="display:none">
+      <div class="feedback-thanks">
+        <div class="feedback-thanks-icon">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+            <circle cx="13" cy="13" r="11.5" stroke="var(--success)" stroke-width="1.4"/>
+            <path d="M8 13.5l3.2 3.2L18 9.5" stroke="var(--success)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="feedback-thanks-text">Thanks for the feedback!</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1147,6 +1570,11 @@ let roundUpMode     = false;
 let reversedScale   = false;
 let savedGradeRows  = [];
 let savedComponents = [];
+
+/* Tracks whether anything has changed since the last successful
+   Save, so we can warn the person before they navigate away. */
+let hasUnsavedChanges = false;
+function markDirty() { hasUnsavedChanges = true; }
 
 /* Cascading example letters for the Grade placeholder — used so each
    row shows a distinct hint instead of repeating "A+" everywhere. */
@@ -1191,6 +1619,7 @@ function saveAllData() {
   try {
     const payload = { activeTabId, tabs };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    hasUnsavedChanges = false;
   } catch (e) {
     console.error('Could not save grade data:', e);
     ok = false;
@@ -1294,7 +1723,6 @@ function loadTabState(tab) {
   const emptyState  = document.getElementById('empty-state');
   const gradDisp    = document.getElementById('grade-display');
   const compScroll  = document.getElementById('comp-scroll');
-  const rangeWarn   = document.getElementById('range-warnings');
 
   if (tab.activated) {
     gradeConfig.classList.remove('fade-in'); /* no re-animation on switch */
@@ -1308,28 +1736,72 @@ function loadTabState(tab) {
     rebuildGradeRows(null);   /* pure render — doesn't call saveGradeRows */
     rebuildComponents();      /* pure render — doesn't call saveComponents */
   } else {
-    gradeConfig.style.display  = 'none';
-    leftHint.style.display     = 'flex';
-    emptyState.style.display   = 'flex';
-    gradDisp.style.display     = 'none';
-    compScroll.style.display   = 'none';
-    compScroll.innerHTML       = '';
-    if (rangeWarn) rangeWarn.innerHTML = '';
-    /* Reset the banner to blank state */
-    document.getElementById('grade-letter').textContent  = '—';
-    document.getElementById('grade-num').textContent     = '—';
-    document.getElementById('grade-pct-sym').style.display  = 'none';
-    document.getElementById('grade-bar').style.width        = '0%';
-    document.getElementById('meta-weight').textContent   = '—';
-    document.getElementById('meta-comps').textContent    = '—';
-    document.getElementById('scaled-badge').style.display   = 'none';
-    document.getElementById('rounded-badge').style.display  = 'none';
-    document.documentElement.style.setProperty('--gc', 'var(--muted)');
-    document.documentElement.style.setProperty('--gc-glow', 'var(--muted-glow)');
-    updateClearBtn();
+    resetGradeUIToBlank();
   }
 
   updateSubjectDisplay(tab.name);
+}
+
+/* Resets the right/left panels to their pre-subject blank state —
+   shared by an unactivated tab and by "no subjects exist at all". */
+function resetGradeUIToBlank() {
+  const gradeConfig = document.getElementById('grade-config');
+  const leftHint    = document.getElementById('left-hint');
+  const emptyState  = document.getElementById('empty-state');
+  const gradDisp    = document.getElementById('grade-display');
+  const compScroll  = document.getElementById('comp-scroll');
+  const rangeWarn   = document.getElementById('range-warnings');
+  const gradeRows   = document.getElementById('grade-rows');
+  const gradeCountEl = document.getElementById('grade-count');
+  const compCountEl  = document.getElementById('comp-count');
+
+  gradeConfig.style.display  = 'none';
+  leftHint.style.display     = 'flex';
+  emptyState.style.display   = 'flex';
+  gradDisp.style.display     = 'none';
+  compScroll.style.display   = 'none';
+  compScroll.innerHTML       = '';
+  if (rangeWarn) rangeWarn.innerHTML = '';
+  /* Without this, leftover DOM from whatever subject was active
+     before would get picked up by saveGradeRows() the next time a
+     subject is activated — leaking its rows/count into a "fresh" one. */
+  if (gradeRows) gradeRows.innerHTML = '';
+  if (gradeCountEl) gradeCountEl.value = '5'; /* matches createTabData() defaults */
+  if (compCountEl)  compCountEl.value  = '3';
+
+  document.getElementById('grade-letter').textContent  = '—';
+  document.getElementById('grade-num').textContent     = '—';
+  document.getElementById('grade-pct-sym').style.display  = 'none';
+  document.getElementById('grade-bar').style.width        = '0%';
+  const metaW = document.getElementById('meta-weight');
+  metaW.textContent = '—';
+  metaW.style.color = '';
+  metaW.title        = '';
+  document.getElementById('meta-comps').textContent    = '—';
+  document.getElementById('scaled-badge').style.display   = 'none';
+  document.getElementById('rounded-badge').style.display  = 'none';
+  document.documentElement.style.setProperty('--gc', 'var(--muted)');
+  document.documentElement.style.setProperty('--gc-glow', 'var(--muted-glow)');
+  updateClearBtn();
+}
+
+/* Full reset for when the very last subject has just been deleted —
+   same end state as a fresh first-ever visit. */
+function resetToNoSubjectsState() {
+  normalizeMode   = false;
+  roundUpMode     = false;
+  reversedScale   = false;
+  savedGradeRows  = [];
+  savedComponents = [];
+
+  document.getElementById('normalize-toggle').checked = false;
+  document.getElementById('roundup-toggle').checked   = false;
+  const revToggle = document.getElementById('reversed-toggle');
+  if (revToggle) revToggle.checked = false;
+  updateRangeHeaderLabels();
+
+  resetGradeUIToBlank();
+  updateSubjectDisplay('');
 }
 
 function switchTab(id) {
@@ -1346,43 +1818,83 @@ function refreshHints() {
   const ep = document.querySelector('#empty-state p');
   if (!lp || !ep) return;
   if (tabs.length === 0) {
-    lp.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">＋</strong> in the tab bar above to add your first subject.';
-    ep.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">＋</strong> above to add a subject and start tracking grades.';
+    lp.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to add your first subject.';
+    ep.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to start tracking grades.';
   } else {
-    lp.innerHTML = 'Double-click the subject tab above to name this subject and get started.';
-    ep.innerHTML = 'Double-click the <strong>subject tab</strong> above to name it and start tracking grades.';
+    lp.innerHTML = 'Double-click the subject in the sidebar to name it and get started.';
+    ep.innerHTML = 'Double-click the <strong>subject</strong> in the sidebar to name it and start tracking grades.';
   }
 }
 
 function addTab() {
-  saveTabState();
-  const newTab = createTabData('New Subject');
-  tabs.push(newTab);
-  activeTabId = newTab.id;
-  loadTabState(newTab);
-  renderTabs();
-  refreshHints();
-  /* Auto-focus the rename input for the new tab */
-  requestAnimationFrame(() => {
-    const nameEl = document.querySelector(`.tab[data-id="${newTab.id}"] .tab-name`);
-    if (nameEl) startRename(newTab.id, nameEl);
+  /* Nothing is created yet — show an inline input in the sidebar
+     list first. A subject (and the calculator itself) only comes
+     into existence once a real name is typed and confirmed below. */
+  if (document.getElementById('new-tab-input')) return; /* already open */
+
+  const list  = document.getElementById('tab-list');
+  const hint  = document.getElementById('tab-hint');
+  if (hint) hint.style.display = 'none'; /* redundant once the input is visible */
+
+  const input = document.createElement('input');
+  input.type        = 'text';
+  input.id          = 'new-tab-input';
+  input.className   = 'subject-add-input';
+  input.placeholder = 'Subject name';
+  list.appendChild(input);
+  input.focus();
+
+  let done = false;
+
+  const restoreHint = () => {
+    if (hint) hint.style.display = tabs.length === 0 ? '' : 'none';
+  };
+
+  const confirmNewTab = () => {
+    if (done) return;
+    done = true;
+    const name = input.value.trim();
+    input.remove();
+    if (!name) { restoreHint(); return; } /* nothing typed — cancel, no tab created */
+
+    saveTabState();
+    const newTab = createTabData(name);
+    tabs.push(newTab);
+    activeTabId = newTab.id;
+    loadTabState(newTab);
+    renderTabs();
+    refreshHints();
+    activate(); /* button pressed AND name entered — now reveal the calculator */
+  };
+
+  input.addEventListener('blur', confirmNewTab);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { done = true; input.remove(); restoreHint(); }
   });
 }
 
 function removeTab(id) {
-  if (tabs.length <= 1) return;
   const idx = tabs.findIndex(t => t.id === id);
   if (idx === -1) return;
-  const tabName = tabs[idx].name || 'this subject';
-  if (!confirm(`Remove "${tabName}"? This deletes all of its grades and components and can't be undone.`)) return;
+  markDirty();
+
   const wasActive = activeTabId === id;
   tabs.splice(idx, 1);
+
   if (wasActive) {
     const next = tabs[idx] || tabs[idx - 1];
-    activeTabId = next.id;
-    loadTabState(next);
+    if (next) {
+      activeTabId = next.id;
+      loadTabState(next);
+    } else {
+      activeTabId = null;
+      resetToNoSubjectsState();
+    }
   }
+
   renderTabs();
+  refreshHints();
 }
 
 function renderTabs() {
@@ -1390,29 +1902,27 @@ function renderTabs() {
   list.innerHTML = '';
 
   tabs.forEach(tab => {
-    const el = document.createElement('button');
-    el.className  = 'tab' + (tab.id === activeTabId ? ' active' : '');
+    const el = document.createElement('div');
+    el.className  = 'subject-item' + (tab.id === activeTabId ? ' active' : '');
     el.dataset.id = tab.id;
 
     const nameSpan = document.createElement('span');
-    nameSpan.className   = 'tab-name';
+    nameSpan.className   = 'subject-item-name';
     nameSpan.textContent = tab.name;
-    nameSpan.title       = 'Double-click to rename';
+    nameSpan.title       = tab.name + ' — double-click to rename';
     el.appendChild(nameSpan);
 
-    /* Close button — only when > 1 tab */
-    if (tabs.length > 1) {
-      const closeBtn = document.createElement('button');
-      closeBtn.className   = 'tab-close';
-      closeBtn.textContent = '×';
-      closeBtn.title       = 'Remove tab';
-      closeBtn.addEventListener('click', e => { e.stopPropagation(); removeTab(tab.id); });
-      el.appendChild(closeBtn);
-    }
+    /* Close button — always present, even for the very last subject */
+    const closeBtn = document.createElement('button');
+    closeBtn.className   = 'subject-item-close';
+    closeBtn.textContent = '×';
+    closeBtn.title       = 'Remove subject';
+    closeBtn.addEventListener('click', e => { e.stopPropagation(); removeTab(tab.id); });
+    el.appendChild(closeBtn);
 
-    /* Click: switch tab */
+    /* Click: switch subject */
     el.addEventListener('click', e => {
-      if (e.target.classList.contains('tab-close')) return;
+      if (e.target.classList.contains('subject-item-close')) return;
       switchTab(tab.id);
     });
 
@@ -1422,7 +1932,7 @@ function renderTabs() {
       if (tab.id !== activeTabId) {
         switchTab(tab.id);
         requestAnimationFrame(() => {
-          const el2 = document.querySelector(`.tab[data-id="${tab.id}"] .tab-name`);
+          const el2 = document.querySelector(`.subject-item[data-id="${tab.id}"] .subject-item-name`);
           if (el2) startRename(tab.id, el2);
         });
       } else {
@@ -1433,15 +1943,27 @@ function renderTabs() {
     list.appendChild(el);
   });
 
-  /* Scroll active tab into view */
+  /* Scroll active subject into view within the sidebar's list */
   requestAnimationFrame(() => {
-    const activeEl = list.querySelector('.tab.active');
+    const activeEl = list.querySelector('.subject-item.active');
     if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
   });
 
-  /* Show "Add a subject" hint only when no tabs exist */
+  /* Show the empty-sidebar hint only when no subjects exist */
   const hint = document.getElementById('tab-hint');
   if (hint) hint.style.display = tabs.length === 0 ? '' : 'none';
+
+  /* Once there's at least one subject, the Add button moves to sit
+     just below the list instead of above it; with zero subjects it
+     stays above the (empty) list where it was originally. */
+  const addBtn = document.querySelector('.add-subject-btn');
+  if (addBtn) {
+    if (tabs.length > 0) {
+      list.insertAdjacentElement('afterend', addBtn);
+    } else {
+      list.insertAdjacentElement('beforebegin', addBtn);
+    }
+  }
 
   /* Show the Save button only once the first subject has been created */
   const saveBtn = document.getElementById('save-btn');
@@ -1465,7 +1987,7 @@ function startRename(tabId, nameEl) {
   const original = tab.name;
   const input    = document.createElement('input');
   input.type        = 'text';
-  input.className   = 'tab-rename-input';
+  input.className   = 'subject-item-rename';
   input.value       = tab.name;
   input.placeholder = 'Subject name';
 
@@ -1478,12 +2000,14 @@ function startRename(tabId, nameEl) {
   const confirm = () => {
     if (done) return;
     done = true;
-    const newName = input.value.trim() || original;
-    tab.name = newName;
+    const typedName = input.value.trim();
+    tab.name = typedName || original;
     renderTabs();
-    updateSubjectDisplay(newName);
-    /* Auto-reveal the grading system the first time a name is confirmed */
-    if (!tab.activated) activate();
+    updateSubjectDisplay(tab.name);
+    /* Only reveal the calculator once a real name has been typed —
+       blurring away without typing anything leaves the tab sitting
+       there unconfigured rather than auto-activating on the default. */
+    if (typedName && !tab.activated) activate();
   };
 
   input.addEventListener('blur', confirm);
@@ -1518,14 +2042,16 @@ function startSubjectRename() {
   const finish = (save) => {
     if (done) return;
     done = true;
-    const newName = save ? (input.value.trim() || original) : original;
+    const typedName = save ? input.value.trim() : '';
+    const newName   = typedName || original;
     tab.name = newName;
     input.remove();
     displayEl.style.display = '';
     displayEl.textContent   = newName;
     renderTabs(); /* keep tab bar in sync */
-    /* Also activate if this is the first time a name is confirmed */
-    if (save && !tab.activated) activate();
+    /* Only activate once a real name has been typed, same rule as
+       the tab-bar rename — no auto-reveal on an accepted default. */
+    if (save && typedName && !tab.activated) activate();
   };
 
   input.addEventListener('blur', () => finish(true));
@@ -1564,25 +2090,70 @@ function updateRangeHeaderLabels() {
   const loEl = document.getElementById('low-hdr-label');
   const hiEl = document.getElementById('high-hdr-label');
   if (!loEl || !hiEl) return;
-  if (reversedScale) {
-    loEl.textContent = 'Low ↑';
-    hiEl.textContent = 'High ↓';
-    loEl.title = 'Reversed scale: this column holds the larger number';
-    hiEl.title = 'Reversed scale: this column holds the smaller, better number';
-  } else {
-    loEl.textContent = 'Low';
-    hiEl.textContent = 'High';
-    loEl.title = '';
-    hiEl.title = '';
-  }
+  loEl.textContent = 'Low';
+  hiEl.textContent = 'High';
+  loEl.title = 'Minimum score';
+  hiEl.title = 'Maximum score';
 }
 
 /* ── GRADE COLOR ───────────────────────────────────────────── */
-function gradeColor(score) {
-  if (score >= 90) return { color: 'var(--success)', glow: 'var(--success-glow)' };
-  if (score >= 80) return { color: 'var(--accent)',  glow: 'var(--accent-glow)'  };
-  if (score >= 70) return { color: 'var(--warn)',    glow: 'var(--warn-glow)'    };
-  return            { color: 'var(--danger)',  glow: 'var(--danger-glow)'  };
+/* Reads a "--x-rgb" custom property (a literal "r,g,b" string) and
+   returns it as a [r,g,b] number array for interpolation. */
+function readRgbToken(varName) {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(varName);
+  return raw.split(',').map(n => parseInt(n.trim(), 10));
+}
+function lerpRgb(a, b, t) {
+  return [0, 1, 2].map(i => Math.round(a[i] + (b[i] - a[i]) * t));
+}
+
+/* Color based on a letter's own rank among the user's defined grade
+   rows (best → worst), rather than the raw numeric score. This is
+   what makes a rounded-up letter show the exact same color it would
+   have shown if that letter were reached without any rounding —
+   the color follows the letter, not the number.
+
+   Rather than a handful of fixed buckets, this blends smoothly:
+   the best grade is fully green, the worst is fully red, the grade
+   sitting exactly in the middle is grey, and everything between
+   fades gradually in intensity toward whichever end it's closer to.
+   Works the same way for a reversed scale, since rank order already
+   flips for that case below. */
+function letterTierColor(letter) {
+  const rows = [];
+  document.querySelectorAll('#grade-rows .grade-row').forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const g  = inputs[0].value.trim();
+    const lo = parseFloat(inputs[1].value);
+    const hi = parseFloat(inputs[2].value);
+    if (g && !isNaN(lo) && !isNaN(hi)) rows.push({ grade: g, ref: Math.max(lo, hi) });
+  });
+  if (rows.length === 0) return null;
+
+  /* Best-to-worst order, matching the same direction the Sort
+     button uses (flips for reversed scale). */
+  rows.sort((a, b) => reversedScale ? a.ref - b.ref : b.ref - a.ref);
+
+  const idx = rows.findIndex(r => r.grade === letter);
+  if (idx === -1) return null;
+
+  /* 0 = best grade, 0.5 = exact middle, 1 = worst grade.
+     A single defined grade has no "better or worse" to compare
+     against, so it's treated as neutral middle rather than green. */
+  const pct = rows.length > 1 ? idx / (rows.length - 1) : 0.5;
+
+  const successRgb = readRgbToken('--success-rgb');
+  const dangerRgb  = readRgbToken('--danger-rgb');
+  const mutedRgb   = readRgbToken('--muted-rgb');
+
+  const rgb = pct <= 0.5
+    ? lerpRgb(successRgb, mutedRgb, pct / 0.5)       /* best half: green fading to grey */
+    : lerpRgb(mutedRgb, dangerRgb, (pct - 0.5) / 0.5); /* worst half: grey fading to red */
+
+  return {
+    color: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`,
+    glow:  `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.4)`,
+  };
 }
 
 /* ── GRADE LOOKUP ──────────────────────────────────────────── */
@@ -1661,19 +2232,27 @@ function updateGrade() {
     ? (totalScore / totalWeight) * 100
     : totalScore;
 
-  const floorLetter = lookupGrade(Math.floor(displayScore));
+  /* Round to the same precision shown on screen before doing any
+     floor/ceil bracket lookups. Without this, floating-point math
+     can produce something like 86.99999999999999 for what should be
+     a clean 87 — Math.floor() would then drop it a whole letter
+     grade below where it visibly displays. */
+  const scoreForLookup = Math.round(displayScore * 100) / 100;
+
+  const floorLetter = lookupGrade(Math.floor(scoreForLookup));
   let   letter      = floorLetter;
   let   wasRounded  = false;
 
-  if (roundUpMode && (displayScore % 1) >= 0.5) {
-    const ceilLetter = lookupGrade(Math.ceil(displayScore));
+  if (roundUpMode && (scoreForLookup % 1) >= 0.5) {
+    const ceilLetter = lookupGrade(Math.ceil(scoreForLookup));
     if (ceilLetter && ceilLetter !== floorLetter) {
       letter     = ceilLetter;
       wasRounded = true;
     }
   }
 
-  const { color, glow } = gradeColor(displayScore);
+  const tierColor = letterTierColor(letter);
+  const { color, glow } = tierColor || { color: 'var(--muted)', glow: 'var(--muted-glow)' };
   document.documentElement.style.setProperty('--gc', color);
   document.documentElement.style.setProperty('--gc-glow', glow);
 
@@ -1725,6 +2304,7 @@ function updateClearBtn() {
 /* ── CLEAR GRADING SYSTEM VALUES (left panel only) ─────────── */
 function clearGrades() {
   if (!confirm('Clear all grade range values? This can\'t be undone.')) return;
+  markDirty();
 
   const gradeCount = parseInt(document.getElementById('grade-count').value);
   savedGradeRows = Array.from({ length: gradeCount }, () => ({ grade: '', lo: '', hi: '' }));
@@ -1741,6 +2321,7 @@ function clearGrades() {
 /* ── CLEAR COMPONENT VALUES (right panel only) ─────────────── */
 function clearComponents() {
   if (!confirm('Clear all component values? This can\'t be undone.')) return;
+  markDirty();
 
   const compCount = parseInt(document.getElementById('comp-count').value);
   savedComponents = Array.from({ length: compCount }, () => ({
@@ -1786,6 +2367,7 @@ function saveComponents() {
 
 /* ── SORT GRADE ROWS (manual — triggered by Sort button) ───── */
 function sortGradeRows() {
+  markDirty();
   saveGradeRows();
   const before = savedGradeRows.map(r => r.grade + '|' + r.lo + '|' + r.hi);
 
@@ -1841,9 +2423,9 @@ function rebuildGradeRows(prevFingerprints) {
 
     row.innerHTML = `
       <input type="text"   placeholder="${phGrade}" value="${sv(saved.grade)}" />
-      <input type="number" placeholder="${phLo}"    value="${sv(saved.lo)}" />
+      <input type="number" step="0.01" placeholder="${phLo}"    value="${sv(saved.lo)}" />
       <span class="dash">–</span>
-      <input type="number" placeholder="${phHi}"    value="${sv(saved.hi)}" />
+      <input type="number" step="0.01" placeholder="${phHi}"    value="${sv(saved.hi)}" />
     `;
 
     const inputs = row.querySelectorAll('input');
@@ -1981,11 +2563,11 @@ function addAssessmentRow(card, saved) {
       style="width:192px;flex-shrink:0" placeholder="Assessment name"
       value="${sv(saved.name)}" />
     <span class="hint">Score</span>
-    <input type="number" class="js-asmnt-score"
+    <input type="number" class="js-asmnt-score" step="0.01"
       style="width:62px;flex-shrink:0" placeholder="0" min="0"
       value="${sv(saved.score)}" />
     <span class="hint">/</span>
-    <input type="number" class="js-asmnt-hps"
+    <input type="number" class="js-asmnt-hps" step="0.01"
       style="width:62px;flex-shrink:0" placeholder="HPS" min="0"
       value="${sv(saved.hps)}" />
     <button class="remove-asmnt-btn" title="Remove assessment" style="visibility:hidden">×</button>
@@ -1997,6 +2579,7 @@ function addAssessmentRow(card, saved) {
   row.querySelector('.js-asmnt-name').addEventListener('input',  updateClearBtn);
   row.querySelector('.remove-asmnt-btn').addEventListener('click', () => {
     if (wrap.querySelectorAll('.assessment-row').length <= 1) return;
+    markDirty();
     row.remove();
     updateRemoveBtns(wrap);
     recalcCard(card);
@@ -2040,7 +2623,7 @@ function rebuildComponents() {
         <div class="assessments-wrap"></div>
         <div class="c-row" style="margin-bottom:10px">
           <span class="hint">Weight&nbsp;(%)</span>
-          <input type="number" class="js-weight"
+          <input type="number" class="js-weight" step="0.01"
             style="width:58px;flex-shrink:0" min="0" max="100"
             value="${sv(saved.weight)}" />
           <span class="hint" style="margin-left:6px">Weighted score:</span>
@@ -2065,6 +2648,7 @@ function rebuildComponents() {
 
     /* "Add Assessment" button */
     card.querySelector('.js-add-asmnt').addEventListener('click', () => {
+      markDirty();
       addAssessmentRow(card, null);
     });
   }
@@ -2176,6 +2760,172 @@ function loadTheme() {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   FEEDBACK — periodic toast nudge + full-screen feedback modal.
+   Submissions POST to Formspree so they actually reach an inbox,
+   plus a local backup copy in case the request fails. The prompt
+   itself is throttled so it doesn't nag on every visit.
+   ══════════════════════════════════════════════════════════════ */
+const FEEDBACK_ENDPOINT    = 'https://formspree.io/f/mojoprjr';
+const FEEDBACK_PROMPT_KEY  = 'gradeCalculator:feedbackPrompt';
+const FEEDBACK_SUBMIT_KEY  = 'gradeCalculator:feedbackSubmissions';
+const FEEDBACK_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; /* re-ask at most once a week */
+const FEEDBACK_FIRST_DELAY_MS = 45000; /* wait a bit before ever showing it */
+
+function readFeedbackPromptState() {
+  try {
+    const raw = localStorage.getItem(FEEDBACK_PROMPT_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+function writeFeedbackPromptState(state) {
+  try { localStorage.setItem(FEEDBACK_PROMPT_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+}
+
+function scheduleFeedbackPrompt() {
+  /* Shows once every time the app is opened — a persistent Feedback
+     button also exists as a fallback, but the toast itself should
+     never be permanently suppressed. */
+  setTimeout(showFeedbackToast, FEEDBACK_FIRST_DELAY_MS);
+}
+
+function showFeedbackToast() {
+  const toast   = document.getElementById('feedback-toast');
+  const overlay = document.getElementById('feedback-overlay');
+  if (!toast) return;
+  if (overlay && overlay.classList.contains('visible')) return; /* don't pop in behind an open modal */
+  toast.classList.add('visible');
+}
+
+function dismissFeedbackToast() {
+  const toast = document.getElementById('feedback-toast');
+  if (toast) toast.classList.remove('visible');
+  const state = readFeedbackPromptState();
+  state.lastPromptAt = Date.now();
+  writeFeedbackPromptState(state);
+}
+
+function openFeedbackModal() {
+  dismissFeedbackToast();
+  const overlay = document.getElementById('feedback-overlay');
+  const formView   = document.getElementById('feedback-form-view');
+  const thanksView = document.getElementById('feedback-thanks-view');
+  const textarea   = document.getElementById('feedback-text');
+  if (!overlay) return;
+  formView.style.display   = 'block';
+  thanksView.style.display = 'none';
+  textarea.value = '';
+  updateFeedbackCharCount();
+  overlay.classList.add('visible');
+  setTimeout(() => textarea.focus(), 200);
+}
+
+function closeFeedbackModal() {
+  const overlay = document.getElementById('feedback-overlay');
+  if (overlay) overlay.classList.remove('visible');
+}
+
+function updateFeedbackCharCount() {
+  const textarea = document.getElementById('feedback-text');
+  const counter  = document.getElementById('feedback-char-count');
+  const submitBtn = document.getElementById('feedback-submit-btn');
+  if (!textarea || !counter) return;
+  const len = textarea.value.length;
+  counter.textContent = `${len} / 2000`;
+  if (submitBtn) submitBtn.disabled = textarea.value.trim().length === 0;
+}
+
+async function submitFeedback() {
+  const textarea  = document.getElementById('feedback-text');
+  const submitBtn = document.getElementById('feedback-submit-btn');
+  const errorEl   = document.getElementById('feedback-error');
+  if (!textarea) return;
+  const text = textarea.value.trim();
+  if (!text) return;
+
+  /* Keep a local backup regardless of whether the network send
+     succeeds, so nothing is lost if the person is offline. */
+  let submissions = [];
+  try {
+    submissions = JSON.parse(localStorage.getItem(FEEDBACK_SUBMIT_KEY) || '[]');
+    if (!Array.isArray(submissions)) submissions = [];
+  } catch (e) {
+    submissions = [];
+  }
+  submissions.push({ text, submittedAt: new Date().toISOString() });
+  try { localStorage.setItem(FEEDBACK_SUBMIT_KEY, JSON.stringify(submissions)); } catch (e) { /* ignore */ }
+
+  if (errorEl) errorEl.style.display = 'none';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+  }
+
+  try {
+    const response = await fetch(FEEDBACK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        page: window.location.href,
+        submittedAt: new Date().toISOString(),
+      }),
+    });
+
+    if (!response.ok) throw new Error('Request failed');
+
+    const state = readFeedbackPromptState();
+    state.submitted    = true;
+    state.lastPromptAt = Date.now();
+    writeFeedbackPromptState(state);
+
+    document.getElementById('feedback-form-view').style.display   = 'none';
+    document.getElementById('feedback-thanks-view').style.display = 'block';
+    setTimeout(closeFeedbackModal, 1800);
+  } catch (e) {
+    /* Network/endpoint failure — the local backup above still has it.
+       Let the person retry rather than silently losing their message. */
+    if (errorEl) errorEl.style.display = 'block';
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = textarea.value.trim().length === 0;
+      submitBtn.textContent = 'Submit feedback!';
+    }
+  }
+}
+
+/* Wire up feedback UI event listeners once, at load */
+function initFeedbackUI() {
+  const toastOpenBtn  = document.getElementById('feedback-toast-open');
+  const toastLaterBtn = document.getElementById('feedback-toast-later');
+  const toastCloseBtn = document.getElementById('feedback-toast-close');
+  const modalCloseBtn = document.getElementById('feedback-modal-close');
+  const overlay       = document.getElementById('feedback-overlay');
+  const textarea      = document.getElementById('feedback-text');
+
+  if (toastOpenBtn)  toastOpenBtn.addEventListener('click', openFeedbackModal);
+  if (toastLaterBtn) toastLaterBtn.addEventListener('click', dismissFeedbackToast);
+  if (toastCloseBtn) toastCloseBtn.addEventListener('click', dismissFeedbackToast);
+  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeFeedbackModal);
+  if (textarea)       textarea.addEventListener('input', updateFeedbackCharCount);
+
+  /* Click on the dimmed backdrop (not the modal itself) closes it */
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeFeedbackModal();
+    });
+  }
+
+  /* Escape closes the modal if it's open */
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay && overlay.classList.contains('visible')) {
+      closeFeedbackModal();
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
    INIT — restore previously saved subjects if present, otherwise
    start empty; the user adds subjects via the + button.
    ══════════════════════════════════════════════════════════════ */
@@ -2200,6 +2950,29 @@ function loadTheme() {
 
   /* Wire up subject-display double-click once (element is static HTML) */
   document.getElementById('subject-display').addEventListener('dblclick', startSubjectRename);
+
+  initFeedbackUI();
+  scheduleFeedbackPrompt();
+
+  /* Catches virtually every field edit (grade rows, component
+     fields, toggles, rename inputs) as an unsaved change, without
+     needing a markDirty() call wired into each individual handler. */
+  const trackDirty = e => {
+    const t = e.target;
+    if (!t || t.id === 'feedback-text' || t.type === 'file') return;
+    if (t.matches && t.matches('input, select, textarea')) markDirty();
+  };
+  document.addEventListener('input', trackDirty);
+  document.addEventListener('change', trackDirty);
+
+  /* Warn before leaving the page if there's anything unsaved.
+     Browsers show their own generic message rather than custom
+     text, but this is as close as the platform allows. */
+  window.addEventListener('beforeunload', e => {
+    if (!hasUnsavedChanges) return;
+    e.preventDefault();
+    e.returnValue = "Your progress isn't saved. Are you sure you want to leave?";
+  });
 })();
 </script>
 </body>
