@@ -3,20 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Grade Calculator — Weighted Grade & GPA Tracker</title>
-<meta name="description" content="A free, browser-based grade calculator. Set up custom grading scales, track weighted components and assessments across multiple subjects, and see your live grade update instantly. No sign-up, no ads — your data stays in your browser." />
+<title>All In One Grade Calculator</title>
+<meta name="description" content="All of your grades in one place. Use this innovative calculator to efficiently track your grades across multiple subjects." />
 
 <!-- Open Graph (Facebook, Slack, Discord, LinkedIn, etc.) -->
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Grade Calculator — Weighted Grade & GPA Tracker" />
-<meta property="og:description" content="Set up custom grading scales, track weighted components across multiple subjects, and see your live grade update instantly. Free, no sign-up." />
-<!-- TODO: replace with your actual deployed URL once you have it -->
+<meta property="og:site_name" content="All In One Grade Calculator" />
+<meta property="og:title" content="All In One Grade Calculator" />
+<meta property="og:description" content="All of your grades in one place. Use this innovative calculator to efficiently track your grades across multiple subjects." />
 <meta property="og:url" content="https://gvgvtf.github.io/Grade-Calculator/" />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Grade Calculator — Weighted Grade & GPA Tracker" />
-<meta name="twitter:description" content="Set up custom grading scales, track weighted components across multiple subjects, and see your live grade update instantly." />
+<meta name="twitter:title" content="All In One Grade Calculator" />
+<meta name="twitter:description" content="All of your grades in one place. Use this innovative calculator to efficiently track your grades across multiple subjects." />
+
+<!-- Structured data — helps Google understand this is a standalone
+     web app named "All In One Grade Calculator", rather than
+     falling back to a generic label for the site. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "All In One Grade Calculator",
+  "url": "https://gvgvtf.github.io/Grade-Calculator/",
+  "description": "All of your grades in one place. Use this innovative calculator to efficiently track your grades across multiple subjects.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (runs in a web browser)",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<link rel="icon" type="image/png" href="data:image/png;base64,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" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -551,7 +573,9 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 input[type="text"]::placeholder,
-input[type="number"]::placeholder { color: var(--muted); }
+input[type="number"]::placeholder { color: var(--muted); opacity: 0.55; }
+:root[data-theme="dark"] input[type="text"]::placeholder,
+:root[data-theme="dark"] input[type="number"]::placeholder { opacity: 1; }
 input[type="text"]:focus,
 input[type="number"]:focus { border-color: var(--accent); }
 input[type="number"]::-webkit-inner-spin-button,
@@ -1176,7 +1200,8 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   outline: none;
   transition: border-color 0.15s;
 }
-.feedback-textarea::placeholder { color: var(--muted); }
+.feedback-textarea::placeholder { color: var(--muted); opacity: 0.55; }
+:root[data-theme="dark"] .feedback-textarea::placeholder { opacity: 1; }
 .feedback-textarea:focus { border-color: var(--accent); }
 .feedback-error {
   font-size: 0.7rem;
@@ -1258,13 +1283,31 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     align-items: stretch;
     width: 100%;
     margin: 0;
-    padding: 14px 14px 24px;
+    padding: 14px 14px 130px; /* extra bottom room so content clears the fixed bottom bar */
     gap: 14px;
   }
-  .subject-sidebar { width: 100%; min-height: 0; }
+  .subject-sidebar { width: 100%; min-height: 0; padding-bottom: 0; }
   .subject-list {
     flex: none;
     max-height: 190px;
+  }
+
+  /* Save / theme / import / export / feedback move out of the
+     sidebar and dock as a fixed bar along the bottom of the screen
+     instead, so they're always reachable without scrolling. */
+  .sidebar-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-top: 0;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--hdr);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 0.5px solid var(--border);
+    border-radius: 0;
+    z-index: 400;
   }
 
   /* The two panels stack full-width instead of sitting side by side */
@@ -1495,7 +1538,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
                 <input type="checkbox" id="roundup-toggle" onchange="toggleRoundUp(this.checked)" />
                 <span class="toggle-knob"></span>
               </label>
-              <label class="toggle-lbl" for="roundup-toggle">Round up letter</label>
+              <label class="toggle-lbl" for="roundup-toggle">Round up grade</label>
             </div>
           </div>
         </div>
