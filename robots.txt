@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gvgvtf.github.io/Grade-Calculator/sitemap.xml
+Sitemap: https://all-in-one-grade-calculator.vercel.app
