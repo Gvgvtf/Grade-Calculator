@@ -42,90 +42,118 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
-/* ── Tokens ────────────────────────────────────────────────── */
-/* Palette source: #06141B · #11212D · #253745 · #4A5C6A · #9BA8AB · #CCD0CF */
+/* ── Tokens ────────────────────────────────────────────────────
+   Dashboard palette — deep instrument-panel navy with a cyan
+   telemetry accent. Dark is the primary/native mode; light is a
+   "daylight console" variant of the same system, not an afterthought.
+   Named hexes: bg #070b12 · surface #0e1420 · accent #22d3ee ·
+   violet #a78bfa (secondary telemetry) · text #e7edf6
+   ──────────────────────────────────────────────────────────────── */
 :root {
-  --bg-a:        #ccd0cf;
-  --bg-b:        #9ba8ab;
-  --bg:          #b6bfbf;
-  --hdr:         rgba(255,255,255,0.5);
-  --surface:     rgba(255,255,255,0.6);
-  --card:        rgba(255,255,255,0.74);
-  --card2:       rgba(255,255,255,0.88);
-  --accent:      #253745;
-  --accent-dim:  rgba(37,55,69,0.08);
-  --accent-mid:  rgba(37,55,69,0.3);
-  --muted:       #4a5c6a;
-  --muted-light: #253745;
-  --text:        #06141b;
-  --border:      rgba(37,55,69,0.16);
-  --success:     #3f8f6c;
-  --warn:        #b8862e;
-  --danger:      #b04a42;
-  --danger-rgb:  176,74,66;
-  --warn-rgb:    184,134,46;
-  --success-rgb: 63,143,108;
-  --muted-rgb:   74,92,106;
-  --rule:        2px solid var(--accent);
-  --hover-tint:    rgba(6,20,27,0.04);
-  --panel-shadow:  0 8px 28px -12px rgba(6,20,27,0.22);
+  --bg-a:        #faf3e6;
+  --bg-b:        #f0dfc7;
+  --bg:          #f5ead9;
+  --hdr:         rgba(255,252,247,0.6);
+  --surface:     rgba(255,252,247,0.55);
+  --card:        rgba(255,252,247,0.7);
+  --card2:       rgba(255,253,249,0.88);
+  --accent:      #0f7ea8;
+  --accent-rgb:  15,126,168;
+  --accent-dim:  rgba(15,126,168,0.09);
+  --accent-mid:  rgba(15,126,168,0.32);
+  --muted:       #8a7a63;
+  --muted-light: #2e2416;
+  --text:        #2a2015;
+  --border:      rgba(90,66,36,0.14);
+  --success:     #0d9268;
+  --warn:        #b1740a;
+  --danger:      #c23b34;
+  --danger-rgb:  194,59,52;
+  --warn-rgb:    177,116,10;
+  --success-rgb: 13,146,104;
+  --muted-rgb:   138,122,99;
+  --rule:        1px solid var(--border);
+  --hover-tint:    rgba(90,66,36,0.05);
+  --panel-shadow:  0 10px 30px -14px rgba(90,66,36,0.2);
+  --grid-line:     rgba(90,66,36,0.05);
+  --mono:        'JetBrains Mono', 'DM Sans', monospace;
 
   /* Grade color + matching glow — overridden by JS */
   --gc:           var(--muted);
-  --gc-glow:      rgba(74,92,106,0.22);
-  --success-glow: rgba(63,143,108,0.4);
-  --accent-glow:  rgba(37,55,69,0.4);
-  --warn-glow:    rgba(184,134,46,0.4);
-  --danger-glow:  rgba(176,74,66,0.4);
-  --muted-glow:   rgba(74,92,106,0.22);
+  --gc-glow:      rgba(91,107,125,0.22);
+  --success-glow: rgba(13,146,104,0.35);
+  --accent-glow:  rgba(15,126,168,0.35);
+  --warn-glow:    rgba(177,116,10,0.35);
+  --danger-glow:  rgba(194,59,52,0.35);
+  --muted-glow:   rgba(91,107,125,0.2);
+
+  /* Per-subject identity colors — cycled by JS via --tab-color */
+  --palette-0: #0f7ea8;
+  --palette-1: #7c3aed;
+  --palette-2: #c2670a;
+  --palette-3: #be185d;
+  --palette-4: #0d9268;
+  --palette-5: #a16207;
 }
 
-/* ── Dark mode override ───────────────────────────────────────
+/* ── Dark mode (native) ────────────────────────────────────────
    Applied via [data-theme="dark"] on <html>, toggled in JS.
    Overrides the same token set so every component (which only
    ever reads var(--...)) repaints automatically. ────────────── */
 :root[data-theme="dark"] {
-  --bg-a:        #11212d;
-  --bg-b:        #06141b;
-  --bg:          #0c1922;
-  --hdr:         rgba(6,20,27,0.55);
-  --surface:     #11212d;
-  --card:        #16242f;
-  --card2:       #1c2e3a;
-  --accent:      #9ba8ab;
-  --accent-dim:  rgba(155,168,171,0.14);
-  --accent-mid:  rgba(155,168,171,0.4);
-  --muted:       #4a5c6a;
-  --muted-light: #9ba8ab;
-  --text:        #ccd0cf;
-  --border:      rgba(204,208,207,0.12);
-  --success:     #6fbf9c;
-  --warn:        #d9a752;
-  --danger:      #d97a71;
-  --danger-rgb:  217,122,113;
-  --warn-rgb:    217,167,82;
-  --success-rgb: 111,191,156;
-  --muted-rgb:   74,92,106;
-  --hover-tint:    rgba(204,208,207,0.05);
-  --panel-shadow:  0 8px 28px -12px rgba(0,0,0,0.55);
+  --bg-a:        #0a0f18;
+  --bg-b:        #050810;
+  --bg:          #070b12;
+  --hdr:         rgba(6,10,18,0.6);
+  --surface:     rgba(14,20,32,0.66);
+  --card:        rgba(17,24,38,0.72);
+  --card2:       rgba(21,29,46,0.9);
+  --accent:      #22d3ee;
+  --accent-rgb:  34,211,238;
+  --accent-dim:  rgba(34,211,238,0.1);
+  --accent-mid:  rgba(34,211,238,0.38);
+  --muted:       #64748b;
+  --muted-light: #aebdd1;
+  --text:        #e7edf6;
+  --border:      rgba(148,163,184,0.14);
+  --success:     #34d399;
+  --warn:        #fbbf24;
+  --danger:      #fb7185;
+  --danger-rgb:  251,113,133;
+  --warn-rgb:    251,191,36;
+  --success-rgb: 52,211,153;
+  --muted-rgb:   100,116,139;
+  --hover-tint:    rgba(148,163,184,0.06);
+  --panel-shadow:  0 10px 34px -14px rgba(0,0,0,0.6);
+  --grid-line:     rgba(148,163,184,0.05);
 
-  --gc-glow:      rgba(155,168,171,0.2);
-  --success-glow: rgba(111,191,156,0.4);
-  --accent-glow:  rgba(155,168,171,0.4);
-  --warn-glow:    rgba(217,167,82,0.4);
-  --danger-glow:  rgba(217,122,113,0.4);
-  --muted-glow:   rgba(74,92,106,0.24);
+  --gc-glow:      rgba(100,116,139,0.22);
+  --success-glow: rgba(52,211,153,0.45);
+  --accent-glow:  rgba(34,211,238,0.45);
+  --warn-glow:    rgba(251,191,36,0.45);
+  --danger-glow:  rgba(251,113,133,0.45);
+  --muted-glow:   rgba(100,116,139,0.24);
+
+  --palette-0: #22d3ee;
+  --palette-1: #a78bfa;
+  --palette-2: #fb923c;
+  --palette-3: #f472b6;
+  --palette-4: #34d399;
+  --palette-5: #facc15;
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html, body { height: 100%; background: var(--bg-b); }
 body {
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  background: linear-gradient(165deg, var(--bg-a) 0%, var(--bg-b) 100%);
+  background:
+    radial-gradient(1100px 620px at 15% -10%, rgba(var(--accent-rgb),0.10), transparent 60%),
+    radial-gradient(900px 700px at 100% 10%, rgba(var(--accent-rgb),0.05), transparent 55%),
+    linear-gradient(165deg, var(--bg-a) 0%, var(--bg-b) 100%);
   background-attachment: fixed;
   color: var(--text);
   display: flex;
@@ -135,6 +163,7 @@ body {
   overflow-y: hidden; /* content scrolls within its own regions instead of growing the page */
   -webkit-font-smoothing: antialiased;
   transition: background 0.35s ease, color 0.35s ease;
+  position: relative;
 }
 
 /* ── Header ────────────────────────────────────────────────── */
@@ -149,7 +178,8 @@ header {
   justify-content: center;
   flex-shrink: 0;
   border-bottom: var(--rule);
-  transition: background 0.35s ease, border-color 0.35s ease;
+  box-shadow: 0 1px 0 var(--accent-mid), 0 8px 24px -18px var(--accent-glow);
+  transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
 .hdr-left {
   display: flex;
@@ -160,6 +190,8 @@ header {
 .hdr-titles {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 3px;
   min-width: 0;
 }
@@ -172,10 +204,11 @@ h1 {
   line-height: 1.1;
 }
 .subtitle {
-  font-size: 0.74rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
   font-weight: 400;
   color: var(--muted);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -189,14 +222,16 @@ h1 {
   gap: 22px;
   flex: 1;
   min-height: 0;
-  width: fit-content;
+  width: 100%;
+  max-width: 1560px;
   margin: 0 auto;
-  padding-top: 20px;
+  padding: 20px 28px 0;
+  box-sizing: border-box;
 }
 
 /* ── Subject sidebar ──────────────────────────────────────── */
 .subject-sidebar {
-  width: 220px;
+  width: 268px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -233,52 +268,76 @@ h1 {
   color: var(--accent);
 }
 
-.subject-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* Wrapper: this is what grows/shrinks and scrolls. Kept separate from
+   .subject-list itself so the list (and the Add-subject button that
+   JS places right after it) sizes to its actual content instead of
+   being stretched to fill the whole sidebar height. */
+.subject-list-scroll {
   margin-top: 10px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   padding-right: 2px;
 }
-.subject-list::-webkit-scrollbar { width: 3px; }
-.subject-list::-webkit-scrollbar-track { background: transparent; }
-.subject-list::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 3px; }
-.subject-list::-webkit-scrollbar-thumb:hover { background: var(--accent-mid); }
+.subject-list-scroll::-webkit-scrollbar { width: 3px; }
+.subject-list-scroll::-webkit-scrollbar-track { background: transparent; }
+.subject-list-scroll::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 3px; }
+.subject-list-scroll::-webkit-scrollbar-thumb:hover { background: var(--accent-mid); }
+
+.subject-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
 
 .subject-item {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 8px 8px 14px;
-  background: transparent;
-  border: none;
-  border-radius: 7px;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 11px 9px 13px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 .subject-item:hover:not(.active) {
   color: var(--muted-light);
   background: var(--hover-tint);
+  border-color: var(--tab-color, var(--accent-mid));
 }
+.subject-item:active { transform: scale(0.985); }
 .subject-item.active {
   color: var(--text);
-  background: var(--accent-dim);
+  background: var(--card2);
+  border-color: var(--tab-color, var(--accent));
+  box-shadow: 0 0 0 1px var(--tab-color, var(--accent)) inset, 0 6px 18px -10px var(--tab-color, var(--accent-glow));
 }
 /* Left accent bar — only the currently active subject has it */
 .subject-item.active::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 8px;
-  bottom: 8px;
+  top: 10px;
+  bottom: 10px;
   width: 3px;
   border-radius: 0 2px 2px 0;
-  background: var(--accent);
+  background: var(--tab-color, var(--accent));
+  box-shadow: 0 0 8px var(--tab-color, var(--accent-glow));
+}
+.subject-item-toprow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.subject-color-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--tab-color, var(--accent));
+  box-shadow: 0 0 6px var(--tab-color, var(--accent-glow));
 }
 .subject-item-name {
   flex: 1;
@@ -312,6 +371,27 @@ h1 {
   color: #fff;
   background: var(--danger);
   opacity: 1;
+}
+/* Bottom row — live grade readout + sparkline, filled in by JS */
+.subject-item-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-left: 15px;
+}
+.subject-grade-badge {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--tab-color, var(--muted));
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.subject-grade-badge.is-empty {
+  color: var(--muted);
+  opacity: 0.55;
+  font-weight: 400;
 }
 
 /* Inline rename input — replaces the name span within a subject item */
@@ -461,15 +541,18 @@ input.subject-add-input:focus { border-color: var(--accent); }
 .body {
   display: flex;
   gap: 18px;
-  padding: 0 20px 20px 0;
-  flex-shrink: 0;
+  padding: 0 0 20px 0;
+  flex: 1;
+  min-width: 0;
   min-height: 0;
 }
 
 /* ── Panels ────────────────────────────────────────────────── */
 .panel {
   background: var(--surface);
-  border-radius: 13px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 14px;
   padding: 20px 18px;
   border: 0.5px solid var(--border);
   box-shadow: var(--panel-shadow);
@@ -477,12 +560,25 @@ input.subject-add-input:focus { border-color: var(--accent); }
   flex-direction: column;
   flex-shrink: 0;
   min-height: 0;
+  position: relative;
+  overflow: hidden;
   transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
-#left-panel    {
-  width: 280px;
+/* Thin telemetry line across the top of every module */
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 65%);
+  opacity: 0.55;
 }
-.right-panel   { width: 760px; overflow: hidden; }
+#left-panel    {
+  width: auto;
+  flex: 0 1 320px;
+  min-width: 280px;
+}
+.right-panel   { width: auto; flex: 1 1 620px; min-width: 0; overflow: hidden; }
 
 /* ── Labels & seps ─────────────────────────────────────────── */
 .tag {
@@ -697,6 +793,33 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   background: var(--gc);
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.45s;
 }
+/* ── Weight distribution stacked bar ───────────────────────── */
+.weight-dist { margin-top: 14px; }
+.weight-dist-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.weight-dist-track {
+  height: 9px;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  background: var(--border);
+  gap: 1px;
+}
+.weight-dist-seg {
+  height: 100%;
+  transition: width 0.45s cubic-bezier(0.4,0,0.2,1), background 0.3s ease;
+  min-width: 2px;
+}
+.weight-dist-seg.uncovered { background: transparent; }
+
 .grade-footer {
   display: flex;
   gap: 20px;
@@ -1261,13 +1384,42 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
    this switches to a normal fluid, vertically-stacked page that
    scrolls the way any responsive site would.
    ══════════════════════════════════════════════════════════════ */
+/* Hidden on desktop — only meaningful once the sidebar becomes a
+   bottom tab bar below. */
+.mobile-more-btn { display: none; }
+.sheet-backdrop  { display: none; }
+.subjects-nav-btn { display: none; }
+.more-sheet-header { display: none; }
+.subjects-sheet-header { display: none; }
+.subject-list-add-btn { display: none; }
+/* On desktop the subject list sits inline in the sidebar exactly as
+   before — 'contents' means this wrapper generates no box of its own
+   and doesn't affect that layout at all. Mobile overrides this to an
+   actual positioned sheet element below. */
+.subjects-sheet { display: contents; }
+
+/* Desktop only: pin "Add subject" to the lower portion of the
+   sidebar card — after the (possibly scrolling) subject list and
+   right above the footer — regardless of how many subjects exist.
+   Pure CSS ordering rather than DOM movement, so it can't reproduce
+   the flex-stretch gap bug from before. Scoped to the desktop
+   breakpoint only so it doesn't touch the mobile bottom nav bar's
+   button order (add-subject-btn is a real flex item there too). */
+@media (min-width: 881px) {
+  .subject-list-scroll { order: 2; }
+  .add-subject-btn      { order: 3; margin-top: 10px; }
+  .sidebar-footer        { order: 4; }
+}
+
 @media (max-width: 880px) {
   body {
     height: auto;
     min-height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    overscroll-behavior-y: none;
   }
+  html { overscroll-behavior-y: none; }
 
   header {
     height: auto;
@@ -1277,38 +1429,201 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   h1 { font-size: 1.15rem; }
   .subtitle { font-size: 0.68rem; }
 
-  /* Sidebar + main content stack instead of sitting side by side */
+  /* Main content stacks; the subject sidebar detaches from this flow
+     entirely and becomes a fixed bottom tab bar (below). */
   .app-layout {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
     margin: 0;
-    padding: 14px 14px 130px; /* extra bottom room so content clears the fixed bottom bar */
+    padding: 14px 14px calc(78px + env(safe-area-inset-bottom, 0px)); /* clears the fixed tab bar */
     gap: 14px;
   }
-  .subject-sidebar { width: 100%; min-height: 0; padding-bottom: 0; }
-  .subject-list {
-    flex: none;
-    max-height: 190px;
+
+  /* ══ Subject sidebar → centered bottom nav bar ═════════════
+     Just two buttons live here now — Add/Subjects and the ⋯ more
+     button — centered as a pair. The subject list itself moved into
+     its own slide-up sheet (below) instead of scrolling inline. */
+  .subject-sidebar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 450;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    background: var(--hdr);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 0.5px solid var(--border);
+    box-shadow: 0 -10px 30px -18px rgba(0,0,0,0.4);
+  }
+  /* The "Subjects" heading and its rule don't belong in a nav bar */
+  .subject-sidebar > .tag,
+  .subject-sidebar > .panel-sep { display: none; }
+
+  .add-subject-btn {
+    flex-shrink: 0;
+    width: auto;
+    padding: 0 24px 0 18px;
+    height: 52px;
+    margin-top: 0;
+    gap: 9px;
+    justify-content: center;
+    border-radius: 26px;
+    background: var(--accent-dim);
+    border: 0.5px solid var(--accent-mid);
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  .add-subject-btn .add-subject-btn-icon { background: transparent; width: 19px; height: 19px; }
+  .add-subject-btn .add-subject-btn-icon svg { width: 13px; height: 13px; }
+  /* Once a subject exists, this becomes "Subjects" instead of "+" */
+  body.has-subjects .add-subject-btn { display: none; }
+  .subjects-nav-btn {
+    flex-shrink: 0;
+    width: auto;
+    height: 52px;
+    padding: 0 24px 0 18px;
+    gap: 9px;
+    border-radius: 26px;
+    background: var(--accent-dim);
+    border: 0.5px solid var(--accent-mid);
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .subjects-nav-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+  body.has-subjects .subjects-nav-btn { display: flex; }
+
+  .mobile-more-btn { display: flex; flex-shrink: 0; width: 52px; height: 52px; border-radius: 18px; }
+  .mobile-more-btn svg { width: 19px; height: 19px; }
+
+  /* ══ Subjects sheet — now a slim horizontal bar: the back button
+     and every subject sit side by side in one row (subjects scroll
+     horizontally), instead of a tall panel with subjects stacked
+     in a list underneath the header. ══ */
+  .subjects-sheet {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 700;
+    background: var(--card2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 0.5px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -24px 60px -20px rgba(0,0,0,0.5);
+    padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(110%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  }
+  body.subjects-sheet-open .subjects-sheet { transform: translateY(0); }
+  .subjects-sheet-header {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0;
+    border-bottom: none;
+  }
+  .subjects-sheet-header .icon-btn { width: 40px; height: 40px; }
+
+  /* The list itself becomes a horizontally-scrolling strip of
+     compact chips, sitting right beside the back button. */
+  .subjects-sheet .subject-list-scroll {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    padding: 2px 2px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .subjects-sheet .subject-list-scroll::-webkit-scrollbar { display: none; }
+  .subjects-sheet .subject-list {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .subjects-sheet .subject-item {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 0;
+    padding: 9px 12px 9px 13px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .subjects-sheet .subject-item.active::before { display: none; } /* no room for the left accent bar in a pill */
+  .subjects-sheet .subject-item-metrics { display: none; } /* grade readout doesn't fit a compact chip */
+  .subjects-sheet .subject-item-name { font-size: 0.86rem; max-width: 30vw; }
+  .subjects-sheet .subject-item-close { opacity: 1; width: 20px; height: 20px; margin-left: 4px; }
+  .subjects-sheet .subject-empty-hint { margin-top: 0; white-space: nowrap; }
+  .subjects-sheet input.subject-add-input { width: 140px; flex-shrink: 0; }
+
+  /* ══ Utilities sheet — the old sidebar-footer, now a slide-up
+     panel triggered by the ⋯ button instead of sitting inline ══ */
+  .sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(4,8,14,0.55);
+    z-index: 650;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  body.more-sheet-open .sheet-backdrop,
+  body.subjects-sheet-open .sheet-backdrop { opacity: 1; pointer-events: auto; }
+
+  .more-sheet-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: -4px 0 4px;
+  }
+  .more-sheet-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
   }
 
-  /* Save / theme / import / export / feedback move out of the
-     sidebar and dock as a fixed bar along the bottom of the screen
-     instead, so they're always reachable without scrolling. */
   .sidebar-footer {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 0; right: 0; bottom: 0;
     margin-top: 0;
-    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
-    background: var(--hdr);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    padding: 14px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+    background: var(--card2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 0.5px solid var(--border);
-    border-radius: 0;
-    z-index: 400;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -24px 60px -20px rgba(0,0,0,0.5);
+    z-index: 700;
+    gap: 10px;
+    transform: translateY(110%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
   }
+  body.more-sheet-open .sidebar-footer { transform: translateY(0); }
+  .sidebar-footer-icons { flex-wrap: wrap; }
+
+  /* Slightly larger tap targets on touch devices. Excludes the pill-
+     shaped buttons (add-subject-btn/subjects-nav-btn/mobile-more-btn)
+     which set their own dimensions below — this rule used to come
+     after theirs in the cascade and, at equal specificity, silently
+     clobbered their width/height, squashing the "Subjects" pill down
+     to a tiny circle that clipped its own label. */
+  .icon-btn:not(.subjects-nav-btn):not(.add-subject-btn):not(.mobile-more-btn) { width: 40px; height: 40px; }
 
   /* The two panels stack full-width instead of sitting side by side */
   .body {
@@ -1317,7 +1632,16 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     padding: 0;
     gap: 14px;
   }
-  #left-panel, .right-panel { width: 100%; }
+  #left-panel, .right-panel {
+    width: 100%;
+    /* Reset the desktop flex-basis (320px/620px), which sized the
+       panel's WIDTH in the row layout. In this column layout the
+       same flex-basis controls HEIGHT instead — silently capping
+       each panel's height and, combined with its own overflow:
+       hidden, clipping any grading-scale rows or grade component
+       cards past that point with no way to scroll to them. */
+    flex: none;
+  }
 
   /* The whole page scrolls normally now, so the panels' own
      internal scroll regions are no longer needed — let them grow
@@ -1336,8 +1660,72 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   .grade-num { font-size: 1.8rem; }
   .grade-vline { margin: 0 14px; }
 
-  /* Slightly larger tap targets on touch devices */
-  .icon-btn { width: 36px; height: 36px; }
+  /* Assessment row: let the name field flex to fill the remaining
+     row width (rather than a fixed px width) so the assessment,
+     score and HPS fields always span the full row edge-to-edge,
+     regardless of font size. Score/HPS stay fixed-width and on
+     one line; the name field absorbs whatever space is left. */
+  .assessment-row { gap: 5px; }
+  .assessment-row .js-asmnt-name {
+    width: auto !important;
+    flex: 1 1 90px;
+    min-width: 96px;
+  }
+  .assessment-row .hint { font-size: 0.7rem; }
+  .assessment-row .js-asmnt-score,
+  .assessment-row .js-asmnt-hps { width: 58px !important; padding: 8px 4px; }
+  .remove-asmnt-btn { width: 20px; height: 20px; }
+
+  /* Bigger, always-visible text & tap targets throughout the app */
+  input[type="text"], input[type="number"] { font-size: 0.9rem; padding: 8px 9px; }
+  .tag { font-size: 0.68rem; }
+  .hint { font-size: 0.76rem; }
+  .badge { font-size: 0.66rem; padding: 4px 9px; }
+  .score-val { font-size: 1rem; }
+  .ghost-btn { font-size: 0.8rem; padding: 6px 14px; }
+  .comp-card { border-radius: 12px; }
+  .card-body { padding: 14px 16px 16px; }
+
+  /* Subject list items — bigger label + always-visible delete
+     button (mobile has no hover state, so the desktop opacity:0
+     default would otherwise make subjects impossible to delete) */
+  .subject-item { padding: 13px 13px 11px 15px; gap: 9px; }
+  .subject-item-name { font-size: 0.9rem; }
+  .subject-grade-badge { font-size: 0.8rem; }
+  .subject-item-close {
+    opacity: 1;
+    width: 24px; height: 24px;
+    font-size: 1.1rem;
+  }
+  .subject-color-dot { width: 8px; height: 8px; }
+
+  /* "+" affordance that lives in the subject list itself, right
+     beside the most recently added subject. Icon-only (no label),
+     sized to match the compact horizontal subject chips. */
+  .subject-list-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    margin-top: 0;
+    background: transparent;
+    border: 1px dashed var(--accent-mid);
+    border-radius: 50%;
+    color: var(--accent);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .subject-list-add-btn:hover,
+  .subject-list-add-btn:active { background: var(--accent-dim); border-color: var(--accent); }
+  .subject-list-add-btn svg { flex-shrink: 0; width: 13px; height: 13px; }
+
+  /* Feedback nudge popup — removed entirely on mobile; the manual
+     "Give feedback" option in the ⋯ utilities sheet is left intact
+     for anyone who wants to use it. */
+  .feedback-toast { display: none !important; }
 }
 
 @media (max-width: 480px) {
@@ -1346,6 +1734,11 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   .grade-footer { flex-wrap: wrap; row-gap: 10px; }
   .grade-footer > div:last-child { margin-left: 0 !important; width: 100%; justify-content: space-between; }
   .sidebar-footer-icons { flex-wrap: wrap; }
+  .subject-item-name { max-width: 84px; }
+  .assessment-row { gap: 4px; }
+  .assessment-row .js-asmnt-name { min-width: 78px; flex-basis: 78px; }
+  .assessment-row .js-asmnt-score,
+  .assessment-row .js-asmnt-hps { width: 50px !important; }
 }
 </style>
 </head>
@@ -1356,7 +1749,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   <div class="hdr-left">
     <div class="hdr-titles">
       <h1>ɢʀᴀᴅᴇ ᴄᴀʟᴄᴜʟᴀᴛᴏʀ</h1>
-      <p class="subtitle">All of your grades in one place.</p>
+      <p class="subtitle">All of your grades in one place</p>
     </div>
   </div>
 </header>
@@ -1370,7 +1763,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   <aside class="subject-sidebar">
     <div class="tag" style="margin-bottom:0">Subjects</div>
     <div class="panel-sep" style="margin-top:10px"></div>
-    <button class="add-subject-btn" onclick="addTab()" title="Add a new subject">
+    <button class="add-subject-btn" onclick="handleAddSubjectClick()" title="Add a new subject">
       <span class="add-subject-btn-icon">
         <svg width="10" height="10" viewBox="0 0 11 11" fill="none" aria-hidden="true">
           <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -1378,11 +1771,52 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
       </span>
       Add subject
     </button>
-    <div class="subject-list" id="tab-list"></div>
-    <span class="subject-empty-hint" id="tab-hint" style="display:none">Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> above to get started.</span>
+    <!-- Mobile-only: replaces the button above once a subject exists -->
+    <button class="icon-btn subjects-nav-btn" id="subjects-btn" onclick="toggleSubjectsSheet()" title="Browse subjects">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <rect x="1.5" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.1"/>
+        <path d="M4 5.2h6M4 8h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+      </svg>
+      <span>Subjects</span>
+    </button>
+    <button class="icon-btn mobile-more-btn" id="mobile-more-btn" onclick="toggleMoreSheet()" title="Theme, import, export, feedback, save">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+        <circle cx="3" cy="7.5" r="1.3" fill="currentColor"/>
+        <circle cx="7.5" cy="7.5" r="1.3" fill="currentColor"/>
+        <circle cx="12" cy="7.5" r="1.3" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <!-- Subject list — plain inline list on desktop; becomes its own
+         slide-up sheet (with back button) on mobile via the
+         'display:contents' wrapper toggle below. -->
+    <div class="subjects-sheet" id="subjects-sheet">
+      <div class="subjects-sheet-header">
+        <button class="icon-btn subjects-back-btn" onclick="toggleSubjectsSheet(false)" title="Back">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M8.5 2.5 3.5 7l5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="subject-list-scroll" id="tab-list-scroll">
+        <div class="subject-list" id="tab-list"></div>
+        <span class="subject-empty-hint" id="tab-hint" style="display:none">Press the <strong style="color:var(--accent);font-weight:400">Add Subject</strong> button to start tracking grades.</span>
+      </div>
+    </div>
+
+    <!-- Backdrop shared by the mobile utilities sheet and subjects sheet -->
+    <div class="sheet-backdrop" id="sheet-backdrop" onclick="toggleMoreSheet(false); toggleSubjectsSheet(false);"></div>
 
     <!-- ── Sidebar footer: utility + save actions ─────────────── -->
     <div class="sidebar-footer">
+      <div class="more-sheet-header">
+        <button class="icon-btn" onclick="toggleMoreSheet(false)" title="Back">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M8.5 2.5 3.5 7l5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="more-sheet-title">Actions</span>
+      </div>
       <div class="sidebar-footer-icons">
         <button class="icon-btn theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Switch between light and dark mode">
           <svg class="icon-sun" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
@@ -1517,6 +1951,14 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
             </div>
           </div>
         </div>
+        <div class="weight-dist" id="weight-dist" style="display:none">
+          <div class="weight-dist-label">
+            <span>Weight distribution</span>
+            <span id="weight-dist-total">—</span>
+          </div>
+          <div class="weight-dist-track" id="weight-dist-track"></div>
+        </div>
+
         <div class="grade-footer">
           <div class="grade-footer-item">
             <div class="gfi-dot" id="gfi-dot"></div>
@@ -1629,7 +2071,10 @@ const GRADE_PLACEHOLDERS = ['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','
 let tabs        = [];
 let activeTabId = null;
 
-function createTabData(name) {
+/* Number of distinct hues in the --palette-N custom properties (tokens block) */
+const SUBJECT_PALETTE_SIZE = 6;
+
+function createTabData(name, colorIndex) {
   return {
     id:             Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     name,
@@ -1641,6 +2086,15 @@ function createTabData(name) {
     savedComponents:[],
     gradeCount:     '5',
     compCount:      '3',
+    /* Dashboard identity — a stable accent color per subject, and a
+       lightweight rolling history of computed grade % so the sidebar
+       card can show a live sparkline without re-deriving it from the
+       full component data on every render. */
+    color:          (typeof colorIndex === 'number') ? colorIndex : 0,
+    history:        [],
+    lastPct:        null,
+    lastLetter:     null,
+    lastTierColor:  null,
   };
 }
 
@@ -1691,14 +2145,17 @@ function flashSaveButton(success) {
 
 /* Fill in any missing fields on a loaded tab using fresh defaults,
    so older save formats still load safely. */
-function normalizeLoadedTab(raw) {
-  const base = createTabData(raw && raw.name ? raw.name : 'Subject');
+function normalizeLoadedTab(raw, index) {
+  const fallbackColor = (typeof index === 'number') ? index % SUBJECT_PALETTE_SIZE : 0;
+  const base = createTabData(raw && raw.name ? raw.name : 'Subject', fallbackColor);
   return {
     ...base,
     ...raw,
     id:              (raw && raw.id) || base.id,
     savedGradeRows:  Array.isArray(raw && raw.savedGradeRows)  ? raw.savedGradeRows  : [],
     savedComponents: Array.isArray(raw && raw.savedComponents) ? raw.savedComponents : [],
+    color:           (raw && typeof raw.color === 'number') ? raw.color : fallbackColor,
+    history:         Array.isArray(raw && raw.history) ? raw.history : [],
   };
 }
 
@@ -1722,7 +2179,7 @@ function loadAllData() {
   }
   if (!payload || !Array.isArray(payload.tabs) || payload.tabs.length === 0) return false;
 
-  tabs = payload.tabs.map(normalizeLoadedTab);
+  tabs = payload.tabs.map((raw, idx) => normalizeLoadedTab(raw, idx));
   activeTabId = (payload.activeTabId && tabs.some(t => t.id === payload.activeTabId))
     ? payload.activeTabId
     : tabs[0].id;
@@ -1860,9 +2317,15 @@ function refreshHints() {
   const lp = document.querySelector('#left-hint p');
   const ep = document.querySelector('#empty-state p');
   if (!lp || !ep) return;
+  const isMobile = window.matchMedia('(max-width: 880px)').matches;
   if (tabs.length === 0) {
-    lp.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to add your first subject.';
-    ep.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to start tracking grades.';
+    if (isMobile) {
+      lp.innerHTML = 'Press the <strong style="color:var(--accent);font-weight:400">Add Subject</strong> button to start tracking grades.';
+      ep.innerHTML = 'Press the <strong style="color:var(--accent);font-weight:400">Add Subject</strong> button to start tracking grades.';
+    } else {
+      lp.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to add your first subject.';
+      ep.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to start tracking grades.';
+    }
   } else {
     lp.innerHTML = 'Double-click the subject in the sidebar to name it and get started.';
     ep.innerHTML = 'Double-click the <strong>subject</strong> in the sidebar to name it and start tracking grades.';
@@ -1878,6 +2341,8 @@ function addTab() {
   const list  = document.getElementById('tab-list');
   const hint  = document.getElementById('tab-hint');
   if (hint) hint.style.display = 'none'; /* redundant once the input is visible */
+  const existingAddBtn = list.querySelector('.subject-list-add-btn');
+  if (existingAddBtn) existingAddBtn.style.display = 'none';
 
   const input = document.createElement('input');
   input.type        = 'text';
@@ -1891,6 +2356,7 @@ function addTab() {
 
   const restoreHint = () => {
     if (hint) hint.style.display = tabs.length === 0 ? '' : 'none';
+    if (existingAddBtn) existingAddBtn.style.display = '';
   };
 
   const confirmNewTab = () => {
@@ -1901,7 +2367,7 @@ function addTab() {
     if (!name) { restoreHint(); return; } /* nothing typed — cancel, no tab created */
 
     saveTabState();
-    const newTab = createTabData(name);
+    const newTab = createTabData(name, tabs.length % SUBJECT_PALETTE_SIZE);
     tabs.push(newTab);
     activeTabId = newTab.id;
     loadTabState(newTab);
@@ -1940,20 +2406,51 @@ function removeTab(id) {
   refreshHints();
 }
 
+/* Targeted patch of one subject's sidebar card — avoids a full
+   renderTabs() rebuild on every keystroke while typing grades. */
+function updateSidebarCardMetrics(tab) {
+  if (!tab) return;
+  const item = document.querySelector(`.subject-item[data-id="${tab.id}"]`);
+  if (!item) return;
+
+  const badge = item.querySelector('.subject-grade-badge');
+  if (badge) {
+    if (tab.lastPct != null) {
+      badge.textContent = (tab.lastLetter ? tab.lastLetter + ' · ' : '') + tab.lastPct.toFixed(1) + '%';
+      badge.classList.remove('is-empty');
+      badge.style.color = tab.lastTierColor || '';
+    } else {
+      badge.textContent = tab.activated ? 'No data yet' : 'Not started';
+      badge.classList.add('is-empty');
+      badge.style.color = '';
+    }
+  }
+}
+
 function renderTabs() {
   const list = document.getElementById('tab-list');
   list.innerHTML = '';
+  document.body.classList.toggle('has-subjects', tabs.length > 0);
 
   tabs.forEach(tab => {
     const el = document.createElement('div');
     el.className  = 'subject-item' + (tab.id === activeTabId ? ' active' : '');
     el.dataset.id = tab.id;
+    el.style.setProperty('--tab-color', `var(--palette-${tab.color % SUBJECT_PALETTE_SIZE})`);
+
+    /* Top row: color dot + name + close button */
+    const topRow = document.createElement('div');
+    topRow.className = 'subject-item-toprow';
+
+    const dot = document.createElement('span');
+    dot.className = 'subject-color-dot';
+    topRow.appendChild(dot);
 
     const nameSpan = document.createElement('span');
     nameSpan.className   = 'subject-item-name';
     nameSpan.textContent = tab.name;
     nameSpan.title       = tab.name + ' — double-click to rename';
-    el.appendChild(nameSpan);
+    topRow.appendChild(nameSpan);
 
     /* Close button — always present, even for the very last subject */
     const closeBtn = document.createElement('button');
@@ -1961,12 +2458,21 @@ function renderTabs() {
     closeBtn.textContent = '×';
     closeBtn.title       = 'Remove subject';
     closeBtn.addEventListener('click', e => { e.stopPropagation(); removeTab(tab.id); });
-    el.appendChild(closeBtn);
+    topRow.appendChild(closeBtn);
+
+    el.appendChild(topRow);
+
+    /* Bottom row: live grade readout + trend sparkline */
+    const metrics = document.createElement('div');
+    metrics.className = 'subject-item-metrics';
+    metrics.innerHTML = `<span class="subject-grade-badge"></span>`;
+    el.appendChild(metrics);
 
     /* Click: switch subject */
     el.addEventListener('click', e => {
       if (e.target.classList.contains('subject-item-close')) return;
       switchTab(tab.id);
+      toggleSubjectsSheet(false); /* no-op outside the mobile sheet */
     });
 
     /* Double-click on name: enter rename mode */
@@ -1984,7 +2490,25 @@ function renderTabs() {
     });
 
     list.appendChild(el);
+    updateSidebarCardMetrics(tab);
   });
+
+  /* Mobile only (hidden on desktop via CSS): a "+" affordance right
+     after the most recently added subject, replacing the old static
+     "Subjects" header + button combo. */
+  if (tabs.length > 0) {
+    const addBtn = document.createElement('button');
+    addBtn.className = 'subject-list-add-btn';
+    addBtn.type = 'button';
+    addBtn.title = 'Add subject';
+    addBtn.setAttribute('aria-label', 'Add subject');
+    addBtn.innerHTML = `
+      <svg viewBox="0 0 11 11" fill="none" aria-hidden="true">
+        <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>`;
+    addBtn.addEventListener('click', addTab);
+    list.appendChild(addBtn);
+  }
 
   /* Scroll active subject into view within the sidebar's list */
   requestAnimationFrame(() => {
@@ -1995,18 +2519,6 @@ function renderTabs() {
   /* Show the empty-sidebar hint only when no subjects exist */
   const hint = document.getElementById('tab-hint');
   if (hint) hint.style.display = tabs.length === 0 ? '' : 'none';
-
-  /* Once there's at least one subject, the Add button moves to sit
-     just below the list instead of above it; with zero subjects it
-     stays above the (empty) list where it was originally. */
-  const addBtn = document.querySelector('.add-subject-btn');
-  if (addBtn) {
-    if (tabs.length > 0) {
-      list.insertAdjacentElement('afterend', addBtn);
-    } else {
-      list.insertAdjacentElement('beforebegin', addBtn);
-    }
-  }
 
   /* Show the Save button only once the first subject has been created */
   const saveBtn = document.getElementById('save-btn');
@@ -2114,6 +2626,38 @@ function updateSubjectDisplay(name) {
   if (dot) dot.style.display = name ? '' : 'none';
 }
 
+/* ── MOBILE UTILITIES SHEET ────────────────────────────────── */
+/* On mobile the subject sidebar becomes a bottom nav bar, which
+   leaves no room for the theme/import/export/feedback/save icons —
+   this slides the existing sidebar-footer up as a sheet instead of
+   duplicating those controls anywhere. No-op above the breakpoint. */
+function toggleMoreSheet(force) {
+  const isOpen = document.body.classList.contains('more-sheet-open');
+  const next   = (typeof force === 'boolean') ? force : !isOpen;
+  document.body.classList.toggle('more-sheet-open', next);
+  if (next) document.body.classList.remove('subjects-sheet-open'); /* only one sheet at a time */
+}
+
+/* ── MOBILE SUBJECTS SHEET ─────────────────────────────────── */
+/* On mobile the subject list moves out of the bottom bar entirely
+   and lives in its own slide-up sheet, opened via the "Subjects"
+   button (which replaces "+" once at least one subject exists). */
+function toggleSubjectsSheet(force) {
+  const isOpen = document.body.classList.contains('subjects-sheet-open');
+  const next   = (typeof force === 'boolean') ? force : !isOpen;
+  document.body.classList.toggle('subjects-sheet-open', next);
+  if (next) document.body.classList.remove('more-sheet-open');
+}
+
+/* The bottom bar's primary button: before any subject exists it just
+   adds one; on mobile this also opens the subjects sheet first so
+   the inline "name your subject" input has somewhere visible to
+   appear (harmless no-op on desktop). */
+function handleAddSubjectClick() {
+  toggleSubjectsSheet(true);
+  addTab();
+}
+
 /* ── TOGGLES ───────────────────────────────────────────────── */
 function toggleNormalize(checked)    { normalizeMode = checked; updateGrade(); }
 function toggleRoundUp(checked)      { roundUpMode   = checked; updateGrade(); }
@@ -2187,11 +2731,11 @@ function letterTierColor(letter) {
 
   const successRgb = readRgbToken('--success-rgb');
   const dangerRgb  = readRgbToken('--danger-rgb');
-  const mutedRgb   = readRgbToken('--muted-rgb');
+  const warnRgb    = readRgbToken('--warn-rgb');
 
   const rgb = pct <= 0.5
-    ? lerpRgb(successRgb, mutedRgb, pct / 0.5)       /* best half: green fading to grey */
-    : lerpRgb(mutedRgb, dangerRgb, (pct - 0.5) / 0.5); /* worst half: grey fading to red */
+    ? lerpRgb(successRgb, warnRgb, pct / 0.5)       /* best half: green fading to yellow */
+    : lerpRgb(warnRgb, dangerRgb, (pct - 0.5) / 0.5); /* worst half: yellow fading to red */
 
   return {
     color: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`,
@@ -2217,8 +2761,42 @@ function lookupGrade(s) {
   return null;
 }
 
+/* ── WEIGHT DISTRIBUTION BAR ───────────────────────────────── */
+/* Renders every defined component's weight as a segment of a single
+   stacked bar — colored components have assessment data, dimmed ones
+   are configured but still empty, and any leftover-to-100% shows as
+   a plain gap so weighting mistakes are visible at a glance. */
+function renderWeightDistribution() {
+  const track = document.getElementById('weight-dist-track');
+  const wrap  = document.getElementById('weight-dist');
+  const totalLbl = document.getElementById('weight-dist-total');
+  if (!track || !wrap) return;
+
+  const cards = document.querySelectorAll('.comp-card');
+  if (cards.length === 0) { wrap.style.display = 'none'; track.innerHTML = ''; return; }
+
+  let segs = '', sum = 0;
+  cards.forEach((card, i) => {
+    const w = parseFloat(card.querySelector('.js-weight').value);
+    if (isNaN(w) || w <= 0) return;
+    sum += w;
+    const resultEl = card.querySelector('.js-result');
+    const hasData  = resultEl && resultEl.classList.contains('lit');
+    const titleVal = card.querySelector('.js-title').value.trim() || ('Component ' + (i + 1));
+    segs += `<div class="weight-dist-seg" style="width:${w}%;background:var(--palette-${i % 6});opacity:${hasData ? 1 : 0.35}" title="${escapeHtml(titleVal)}: ${w}%"></div>`;
+  });
+  if (sum < 100) {
+    segs += `<div class="weight-dist-seg uncovered" style="width:${(100 - sum).toFixed(2)}%" title="Unassigned weight"></div>`;
+  }
+  track.innerHTML = segs;
+  totalLbl.textContent = sum.toFixed(0) + '% of 100%';
+  wrap.style.display = 'block';
+}
+
 /* ── UPDATE GRADE DISPLAY ──────────────────────────────────── */
 function updateGrade() {
+  renderWeightDistribution();
+
   const cards = document.querySelectorAll('.comp-card');
   let totalScore = 0, totalWeight = 0, filledComps = 0;
 
@@ -2268,6 +2846,7 @@ function updateGrade() {
     document.documentElement.style.setProperty('--gc', 'var(--muted)');
     document.documentElement.style.setProperty('--gc-glow', 'var(--muted-glow)');
     updateClearBtn();
+    { const t = currentTab(); if (t) { t.lastPct = null; t.lastLetter = null; t.lastTierColor = null; updateSidebarCardMetrics(t); } }
     return;
   }
 
@@ -2325,6 +2904,22 @@ function updateGrade() {
   roundedBadge.style.display = wasRounded     ? 'block'        : 'none';
 
   updateClearBtn();
+
+  /* Cache the live figure on the tab + push to its rolling history,
+     then patch just that one sidebar card (not a full renderTabs). */
+  const tab = currentTab();
+  if (tab) {
+    tab.lastPct       = displayScore;
+    tab.lastLetter    = letter || null;
+    tab.lastTierColor = color;
+    const last = tab.history[tab.history.length - 1];
+    const rounded = Math.round(displayScore * 100) / 100;
+    if (!last || Math.abs(last.pct - rounded) > 0.01) {
+      tab.history.push({ pct: rounded });
+      if (tab.history.length > 24) tab.history.shift();
+    }
+    updateSidebarCardMetrics(tab);
+  }
 }
 
 /* ── CLEAR BUTTON VISIBILITY ───────────────────────────────── */
@@ -2756,7 +3351,7 @@ function handleImportFile(event) {
       : true;
     if (!replaceExisting) return;
 
-    tabs = payload.tabs.map(normalizeLoadedTab);
+    tabs = payload.tabs.map((raw, idx) => normalizeLoadedTab(raw, idx));
     activeTabId = (payload.activeTabId && tabs.some(t => t.id === payload.activeTabId))
       ? payload.activeTabId
       : tabs[0].id;
@@ -2827,9 +3422,11 @@ function writeFeedbackPromptState(state) {
 }
 
 function scheduleFeedbackPrompt() {
-  /* Shows once every time the app is opened — a persistent Feedback
-     button also exists as a fallback, but the toast itself should
-     never be permanently suppressed. */
+  /* Shows once every time the app is opened on desktop — a persistent
+     Feedback button also exists as a fallback there. On mobile the
+     popup nudge is removed entirely (not just visually hidden), so
+     it's never scheduled in the first place. */
+  if (window.matchMedia('(max-width: 880px)').matches) return;
   setTimeout(showFeedbackToast, FEEDBACK_FIRST_DELAY_MS);
 }
 
@@ -2993,6 +3590,14 @@ function initFeedbackUI() {
 
   /* Wire up subject-display double-click once (element is static HTML) */
   document.getElementById('subject-display').addEventListener('dblclick', startSubjectRename);
+
+  /* Auto-close the mobile utilities sheet once an action inside it is
+     taken, so it doesn't linger open after Save/theme-toggle/etc. */
+  const footerEl = document.querySelector('.sidebar-footer');
+  if (footerEl) footerEl.addEventListener('click', () => toggleMoreSheet(false));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.body.classList.contains('more-sheet-open')) toggleMoreSheet(false);
+  });
 
   initFeedbackUI();
   scheduleFeedbackPrompt();
