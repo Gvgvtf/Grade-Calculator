@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://all-in-one-grade-calculator.vercel.app
+Sitemap: https://all-in-one-grade-calculator.vercel.app/sitemap.xml
