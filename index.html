@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>All In One Grade Calculator</title>
 <meta name="description" content="All of your grades in one place. Use this innovative calculator to efficiently track your grades across multiple subjects." />
-<link rel="canonical" href="https://all-in-one-grade-calculator.vercel.app" />
 
 <!-- Open Graph (Facebook, Slack, Discord, LinkedIn, etc.) -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="All In One Grade Calculator" />
 <meta property="og:title" content="All In One Grade Calculator" />
 <meta property="og:description" content="All of your grades in one place. Use this innovative calculator to efficiently track your grades across multiple subjects." />
-<meta property="og:url" content="https://all-in-one-grade-calculator.vercel.app" />
+<meta property="og:url" content="https://all-in-one-grade-calculator.vercel.app/" />
+<link rel="canonical" href="https://all-in-one-grade-calculator.vercel.app/" />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary" />
@@ -27,7 +27,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "All In One Grade Calculator",
-  "url": "https://all-in-one-grade-calculator.vercel.app",
+  "url": "https://all-in-one-grade-calculator.vercel.app/",
   "description": "All of your grades in one place. Use this innovative calculator to efficiently track your grades across multiple subjects.",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Any (runs in a web browser)",
@@ -431,6 +431,11 @@ input.subject-add-input:focus { border-color: var(--accent); }
   line-height: 1.6;
   margin-top: 12px;
 }
+
+/* Inline "add subject" tile — appended right after the last subject
+   card in the mobile Subjects sheet. Desktop keeps using the separate
+   pinned .add-subject-btn instead, so this stays hidden there. */
+.subject-add-tile { display: none; }
 
 /* ── Sidebar footer: utility icons + Save ────────────────────── */
 .sidebar-footer {
@@ -1392,7 +1397,6 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .subjects-nav-btn { display: none; }
 .more-sheet-header { display: none; }
 .subjects-sheet-header { display: none; }
-.subject-list-add-btn { display: none; }
 /* On desktop the subject list sits inline in the sidebar exactly as
    before — 'contents' means this wrapper generates no box of its own
    and doesn't affect that layout at all. Mobile overrides this to an
@@ -1468,27 +1472,26 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   .add-subject-btn {
     flex-shrink: 0;
     width: auto;
-    padding: 0 24px 0 18px;
+    padding: 0 22px 0 17px;
     height: 52px;
     margin-top: 0;
-    gap: 9px;
+    gap: 8px;
     justify-content: center;
     border-radius: 26px;
     background: var(--accent-dim);
     border: 0.5px solid var(--accent-mid);
     font-size: 0.9rem;
-    white-space: nowrap;
   }
   .add-subject-btn .add-subject-btn-icon { background: transparent; width: 19px; height: 19px; }
   .add-subject-btn .add-subject-btn-icon svg { width: 13px; height: 13px; }
   /* Once a subject exists, this becomes "Subjects" instead of "+" */
   body.has-subjects .add-subject-btn { display: none; }
-  .subjects-nav-btn {
+  .icon-btn.subjects-nav-btn {
     flex-shrink: 0;
     width: auto;
     height: 52px;
-    padding: 0 24px 0 18px;
-    gap: 9px;
+    padding: 0 22px 0 17px;
+    gap: 8px;
     border-radius: 26px;
     background: var(--accent-dim);
     border: 0.5px solid var(--accent-mid);
@@ -1496,25 +1499,20 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     font-family: 'DM Sans', sans-serif;
     font-size: 0.9rem;
     font-weight: 500;
-    white-space: nowrap;
   }
   .subjects-nav-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
   body.has-subjects .subjects-nav-btn { display: flex; }
 
-  .mobile-more-btn { display: flex; flex-shrink: 0; width: 52px; height: 52px; border-radius: 18px; }
-  .mobile-more-btn svg { width: 19px; height: 19px; }
+  .mobile-more-btn { display: flex; flex-shrink: 0; }
 
-  /* ══ Subjects sheet — now a slim horizontal bar: the back button
-     and every subject sit side by side in one row (subjects scroll
-     horizontally), instead of a tall panel with subjects stacked
-     in a list underneath the header. ══ */
+  /* ══ Subjects sheet — the subject list, as its own slide-up
+     panel with a back button, separate from the utilities sheet ══ */
   .subjects-sheet {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
     position: fixed;
     left: 0; right: 0; bottom: 0;
+    top: 12%;
     z-index: 700;
     background: var(--card2);
     backdrop-filter: blur(20px);
@@ -1522,7 +1520,6 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     border-top: 0.5px solid var(--border);
     border-radius: 18px 18px 0 0;
     box-shadow: 0 -24px 60px -20px rgba(0,0,0,0.5);
-    padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
     transform: translateY(110%);
     transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
   }
@@ -1531,45 +1528,44 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    padding: 0;
-    border-bottom: none;
+    padding: 14px 14px 10px;
+    border-bottom: 0.5px solid var(--border);
   }
-  .subjects-sheet-header .icon-btn { width: 40px; height: 40px; }
-
-  /* The list itself becomes a horizontally-scrolling strip of
-     compact chips, sitting right beside the back button. */
   .subjects-sheet .subject-list-scroll {
     flex: 1;
-    min-width: 0;
+    min-height: 0;
+    margin-top: 0;
+    padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+  .subject-add-tile {
     display: flex;
     align-items: center;
-    margin-top: 0;
-    padding: 2px 2px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 7px;
+    padding: 15px;
+    background: var(--accent-dim);
+    border: 1px dashed var(--accent-mid);
+    border-radius: 10px;
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
   }
-  .subjects-sheet .subject-list-scroll::-webkit-scrollbar { display: none; }
-  .subjects-sheet .subject-list {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 8px;
+  .subject-add-tile:active { transform: scale(0.98); }
+  .subject-add-tile .add-subject-btn-icon {
+    display: flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; flex-shrink: 0;
   }
-  .subjects-sheet .subject-item {
-    flex-direction: row;
-    align-items: center;
-    flex-shrink: 0;
-    gap: 0;
-    padding: 9px 12px 9px 13px;
-    border-radius: 20px;
-    white-space: nowrap;
-  }
-  .subjects-sheet .subject-item.active::before { display: none; } /* no room for the left accent bar in a pill */
-  .subjects-sheet .subject-item-metrics { display: none; } /* grade readout doesn't fit a compact chip */
-  .subjects-sheet .subject-item-name { font-size: 0.86rem; max-width: 30vw; }
-  .subjects-sheet .subject-item-close { opacity: 1; width: 20px; height: 20px; margin-left: 4px; }
-  .subjects-sheet .subject-empty-hint { margin-top: 0; white-space: nowrap; }
-  .subjects-sheet input.subject-add-input { width: 140px; flex-shrink: 0; }
+  .subject-add-tile .add-subject-btn-icon svg { width: 13px; height: 13px; }
+
+  /* No hover on touch devices — the delete (×) button must always
+     be visible, not just on the active card, or non-active subjects
+     become undeletable without first switching to them. */
+  .subject-item-close { opacity: 1; width: 26px; height: 26px; font-size: 1.15rem; }
 
   /* ══ Utilities sheet — the old sidebar-footer, now a slide-up
      panel triggered by the ⋯ button instead of sitting inline ══ */
@@ -1603,28 +1599,28 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     position: fixed;
     left: 0; right: 0; bottom: 0;
     margin-top: 0;
-    padding: 14px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
     background: var(--card2);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 0.5px solid var(--border);
-    border-radius: 18px 18px 0 0;
+    border-radius: 22px 22px 0 0;
     box-shadow: 0 -24px 60px -20px rgba(0,0,0,0.5);
     z-index: 700;
-    gap: 10px;
+    gap: 14px;
     transform: translateY(110%);
     transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
   }
   body.more-sheet-open .sidebar-footer { transform: translateY(0); }
-  .sidebar-footer-icons { flex-wrap: wrap; }
+  .sidebar-footer-icons { flex-wrap: wrap; gap: 10px; }
 
-  /* Slightly larger tap targets on touch devices. Excludes the pill-
-     shaped buttons (add-subject-btn/subjects-nav-btn/mobile-more-btn)
-     which set their own dimensions below — this rule used to come
-     after theirs in the cascade and, at equal specificity, silently
-     clobbered their width/height, squashing the "Subjects" pill down
-     to a tiny circle that clipped its own label. */
-  .icon-btn:not(.subjects-nav-btn):not(.add-subject-btn):not(.mobile-more-btn) { width: 40px; height: 40px; }
+  /* Bigger tap targets on touch devices */
+  .icon-btn { width: 48px; height: 48px; }
+  .icon-btn svg { width: 18px; height: 18px; }
+
+  .save-btn { height: 50px; font-size: 0.92rem; gap: 9px; border-radius: 10px; }
+  .save-btn svg { width: 16px; height: 16px; }
+  .more-sheet-title { font-size: 0.95rem; }
 
   /* The two panels stack full-width instead of sitting side by side */
   .body {
@@ -1633,16 +1629,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
     padding: 0;
     gap: 14px;
   }
-  #left-panel, .right-panel {
-    width: 100%;
-    /* Reset the desktop flex-basis (320px/620px), which sized the
-       panel's WIDTH in the row layout. In this column layout the
-       same flex-basis controls HEIGHT instead — silently capping
-       each panel's height and, combined with its own overflow:
-       hidden, clipping any grading-scale rows or grade component
-       cards past that point with no way to scroll to them. */
-    flex: none;
-  }
+  #left-panel, .right-panel { width: 100%; }
 
   /* The whole page scrolls normally now, so the panels' own
      internal scroll regions are no longer needed — let them grow
@@ -1661,72 +1648,11 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   .grade-num { font-size: 1.8rem; }
   .grade-vline { margin: 0 14px; }
 
-  /* Assessment row: let the name field flex to fill the remaining
-     row width (rather than a fixed px width) so the assessment,
-     score and HPS fields always span the full row edge-to-edge,
-     regardless of font size. Score/HPS stay fixed-width and on
-     one line; the name field absorbs whatever space is left. */
+  /* Assessment row: shrink the name field (and tighten spacing/labels)
+     so Score + HPS always stay on the same line instead of wrapping. */
   .assessment-row { gap: 5px; }
-  .assessment-row .js-asmnt-name {
-    width: auto !important;
-    flex: 1 1 90px;
-    min-width: 96px;
-  }
-  .assessment-row .hint { font-size: 0.7rem; }
-  .assessment-row .js-asmnt-score,
-  .assessment-row .js-asmnt-hps { width: 58px !important; padding: 8px 4px; }
-  .remove-asmnt-btn { width: 20px; height: 20px; }
-
-  /* Bigger, always-visible text & tap targets throughout the app */
-  input[type="text"], input[type="number"] { font-size: 0.9rem; padding: 8px 9px; }
-  .tag { font-size: 0.68rem; }
-  .hint { font-size: 0.76rem; }
-  .badge { font-size: 0.66rem; padding: 4px 9px; }
-  .score-val { font-size: 1rem; }
-  .ghost-btn { font-size: 0.8rem; padding: 6px 14px; }
-  .comp-card { border-radius: 12px; }
-  .card-body { padding: 14px 16px 16px; }
-
-  /* Subject list items — bigger label + always-visible delete
-     button (mobile has no hover state, so the desktop opacity:0
-     default would otherwise make subjects impossible to delete) */
-  .subject-item { padding: 13px 13px 11px 15px; gap: 9px; }
-  .subject-item-name { font-size: 0.9rem; }
-  .subject-grade-badge { font-size: 0.8rem; }
-  .subject-item-close {
-    opacity: 1;
-    width: 24px; height: 24px;
-    font-size: 1.1rem;
-  }
-  .subject-color-dot { width: 8px; height: 8px; }
-
-  /* "+" affordance that lives in the subject list itself, right
-     beside the most recently added subject. Icon-only (no label),
-     sized to match the compact horizontal subject chips. */
-  .subject-list-add-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    padding: 0;
-    margin-top: 0;
-    background: transparent;
-    border: 1px dashed var(--accent-mid);
-    border-radius: 50%;
-    color: var(--accent);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .subject-list-add-btn:hover,
-  .subject-list-add-btn:active { background: var(--accent-dim); border-color: var(--accent); }
-  .subject-list-add-btn svg { flex-shrink: 0; width: 13px; height: 13px; }
-
-  /* Feedback nudge popup — removed entirely on mobile; the manual
-     "Give feedback" option in the ⋯ utilities sheet is left intact
-     for anyone who wants to use it. */
-  .feedback-toast { display: none !important; }
+  .assessment-row .js-asmnt-name { width: 74px !important; }
+  .assessment-row .hint { font-size: 0.64rem; }
 }
 
 @media (max-width: 480px) {
@@ -1735,11 +1661,8 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
   .grade-footer { flex-wrap: wrap; row-gap: 10px; }
   .grade-footer > div:last-child { margin-left: 0 !important; width: 100%; justify-content: space-between; }
   .sidebar-footer-icons { flex-wrap: wrap; }
-  .subject-item-name { max-width: 84px; }
-  .assessment-row { gap: 4px; }
-  .assessment-row .js-asmnt-name { min-width: 78px; flex-basis: 78px; }
-  .assessment-row .js-asmnt-score,
-  .assessment-row .js-asmnt-hps { width: 50px !important; }
+  .subject-item-name { max-width: 70px; }
+  .assessment-row .js-asmnt-name { width: 58px !important; }
 }
 </style>
 </head>
@@ -1801,7 +1724,15 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
       </div>
       <div class="subject-list-scroll" id="tab-list-scroll">
         <div class="subject-list" id="tab-list"></div>
-        <span class="subject-empty-hint" id="tab-hint" style="display:none">Press the <strong style="color:var(--accent);font-weight:400">Add Subject</strong> button to start tracking grades.</span>
+        <button class="subject-add-tile" id="subject-add-tile" onclick="addTab()" title="Add a new subject">
+          <span class="add-subject-btn-icon">
+            <svg width="12" height="12" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Add subject
+        </button>
+        <span class="subject-empty-hint" id="tab-hint" style="display:none">Tap <strong style="color:var(--accent);font-weight:400">Add subject</strong> below to get started.</span>
       </div>
     </div>
 
@@ -2321,8 +2252,8 @@ function refreshHints() {
   const isMobile = window.matchMedia('(max-width: 880px)').matches;
   if (tabs.length === 0) {
     if (isMobile) {
-      lp.innerHTML = 'Press the <strong style="color:var(--accent);font-weight:400">Add Subject</strong> button to start tracking grades.';
-      ep.innerHTML = 'Press the <strong style="color:var(--accent);font-weight:400">Add Subject</strong> button to start tracking grades.';
+      lp.innerHTML = 'Press the <strong style="color:var(--accent);font-weight:400">"+"</strong> button to start tracking grades.';
+      ep.innerHTML = 'Press the <strong style="color:var(--accent);font-weight:400">"+"</strong> button to start tracking grades.';
     } else {
       lp.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to add your first subject.';
       ep.innerHTML = 'Click <strong style="color:var(--accent);font-weight:400">Add subject</strong> in the sidebar to start tracking grades.';
@@ -2341,9 +2272,9 @@ function addTab() {
 
   const list  = document.getElementById('tab-list');
   const hint  = document.getElementById('tab-hint');
+  const tile  = document.getElementById('subject-add-tile');
   if (hint) hint.style.display = 'none'; /* redundant once the input is visible */
-  const existingAddBtn = list.querySelector('.subject-list-add-btn');
-  if (existingAddBtn) existingAddBtn.style.display = 'none';
+  if (tile) tile.style.display = 'none'; /* avoid a second "Add subject" affordance while typing */
 
   const input = document.createElement('input');
   input.type        = 'text';
@@ -2357,7 +2288,7 @@ function addTab() {
 
   const restoreHint = () => {
     if (hint) hint.style.display = tabs.length === 0 ? '' : 'none';
-    if (existingAddBtn) existingAddBtn.style.display = '';
+    if (tile) tile.style.display = '';
   };
 
   const confirmNewTab = () => {
@@ -2374,6 +2305,7 @@ function addTab() {
     loadTabState(newTab);
     renderTabs();
     refreshHints();
+    if (tile) tile.style.display = '';
     activate(); /* button pressed AND name entered — now reveal the calculator */
   };
 
@@ -2493,23 +2425,6 @@ function renderTabs() {
     list.appendChild(el);
     updateSidebarCardMetrics(tab);
   });
-
-  /* Mobile only (hidden on desktop via CSS): a "+" affordance right
-     after the most recently added subject, replacing the old static
-     "Subjects" header + button combo. */
-  if (tabs.length > 0) {
-    const addBtn = document.createElement('button');
-    addBtn.className = 'subject-list-add-btn';
-    addBtn.type = 'button';
-    addBtn.title = 'Add subject';
-    addBtn.setAttribute('aria-label', 'Add subject');
-    addBtn.innerHTML = `
-      <svg viewBox="0 0 11 11" fill="none" aria-hidden="true">
-        <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>`;
-    addBtn.addEventListener('click', addTab);
-    list.appendChild(addBtn);
-  }
 
   /* Scroll active subject into view within the sidebar's list */
   requestAnimationFrame(() => {
@@ -3423,11 +3338,9 @@ function writeFeedbackPromptState(state) {
 }
 
 function scheduleFeedbackPrompt() {
-  /* Shows once every time the app is opened on desktop — a persistent
-     Feedback button also exists as a fallback there. On mobile the
-     popup nudge is removed entirely (not just visually hidden), so
-     it's never scheduled in the first place. */
-  if (window.matchMedia('(max-width: 880px)').matches) return;
+  /* Shows once every time the app is opened — a persistent Feedback
+     button also exists as a fallback, but the toast itself should
+     never be permanently suppressed. */
   setTimeout(showFeedbackToast, FEEDBACK_FIRST_DELAY_MS);
 }
 
